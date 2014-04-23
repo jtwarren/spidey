@@ -2,7 +2,7 @@ package com.example.spidey;
 
 
 public class Scan {
-	private int _id;
+	private long _id;
 	private String _location;
 	private double _latitude;
 	private double _longitude;
@@ -15,7 +15,7 @@ public class Scan {
 		this._location = location;
 	}
 
-	public Scan(int id, String location, float latitude, float longitude, long timestamp) {
+	public Scan(long id, String location, float latitude, float longitude, long timestamp) {
 		this._id = id;
 		this._location = location;
 		this._latitude = latitude;
@@ -27,7 +27,7 @@ public class Scan {
 		this._id = id;
 	}
 
-	public int getID() {
+	public long getID() {
 		return this._id;
 	}
 	
