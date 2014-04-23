@@ -5,6 +5,7 @@ import org.osmdroid.views.MapView;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,10 +30,6 @@ public class MainActivity extends Activity {
 			
 			
 		}
-		
-	
-	}
-	
 	
 		// Use this to test simple database CRUD
 		// Intent intent = new Intent(this, DatabaseActivity.class);
