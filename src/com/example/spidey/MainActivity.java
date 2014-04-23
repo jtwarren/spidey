@@ -28,7 +28,9 @@ public class MainActivity extends Activity {
 		
 		mMapView = (MapView)this.findViewById(R.id.mapview);
 	
-		
+		// Use this to test simple database CRUD
+//		Intent intent = new Intent(this, DatabaseActivity.class);
+//		startActivity(intent);
 		
 	}
 	

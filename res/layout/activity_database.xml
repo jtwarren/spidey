@@ -24,7 +24,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
-                android:id="@+id/productID"
+                android:id="@+id/scanID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/idvalue_text"
@@ -45,7 +45,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <EditText
-                android:id="@+id/product_name"
+                android:id="@+id/scanName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
@@ -65,21 +65,21 @@
             android:id="@+id/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="newProduct"
+            android:onClick="newScan"
             android:text="@string/add_string" />
 
         <Button
             android:id="@+id/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="lookupProduct"
+            android:onClick="lookupScan"
             android:text="@string/find_text" />
 
         <Button
             android:id="@+id/button3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="removeProduct"
+            android:onClick="removeScan"
             android:text="@string/delete_text" />
     </LinearLayout>
 

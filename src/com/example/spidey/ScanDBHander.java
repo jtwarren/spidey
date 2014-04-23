@@ -25,7 +25,7 @@ public class ScanDBHander extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_SCANS_TABLE = "CREATE TABLE " + TABLE_SCANS + "("
 				+ COLUMN_ID + " INTEGER PRIMARY KEY," + COLUMN_SCANNAME
-				+ " TEXT," + ")";
+				+ " TEXT" + ")";
 		db.execSQL(CREATE_SCANS_TABLE);
 	}
 
@@ -35,7 +35,7 @@ public class ScanDBHander extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 
-	public void addNewScan(Scan scan) {
+	public void addScan(Scan scan) {
 
 		ContentValues values = new ContentValues();
 		values.put(COLUMN_SCANNAME, scan.getScanName());
@@ -46,9 +46,9 @@ public class ScanDBHander extends SQLiteOpenHelper {
 		db.close();
 	}
 
-	public Scan findProduct(String productname) {
+	public Scan findScan(String scanname) {
 		String query = "Select * FROM " + TABLE_SCANS + " WHERE "
-				+ COLUMN_SCANNAME + " =  \"" + productname + "\"";
+				+ COLUMN_SCANNAME + " =  \"" + scanname + "\"";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -79,12 +79,12 @@ public class ScanDBHander extends SQLiteOpenHelper {
 
 		Cursor cursor = db.rawQuery(query, null);
 
-		Scan product = new Scan();
+		Scan scan = new Scan();
 
 		if (cursor.moveToFirst()) {
-			product.setID(Integer.parseInt(cursor.getString(0)));
+			scan.setID(Integer.parseInt(cursor.getString(0)));
 			db.delete(TABLE_SCANS, COLUMN_ID + " = ?",
-					new String[] { String.valueOf(product.getID()) });
+					new String[] { String.valueOf(scan.getID()) });
 			cursor.close();
 			result = true;
 		}
