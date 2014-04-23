@@ -1,7 +1,5 @@
 package com.example.spidey;
 
-import java.sql.Timestamp;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class DatabaseHandler extends SQLiteOpenHelper {
+public class ScanDatabaseHandler extends SQLiteOpenHelper {
 
 	private static final int DATABASE_VERSION = 2;
 	private static final String DATABASE_NAME = "scanDB.db";
@@ -21,8 +19,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public static final String COLUMN_LONGITUDE = "longitude";
 	public static final String COLUMN_TIMESTAMP = "timestamp";
 
-	public DatabaseHandler(Context context, String name, CursorFactory factory,
-			int version) {
+	public ScanDatabaseHandler(Context context, String name,
+			CursorFactory factory, int version) {
 		super(context, DATABASE_NAME, factory, DATABASE_VERSION);
 	}
 
@@ -42,18 +40,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 
-	public void addScan(Scan scan) {
+	/**
+	 * Convenience method for inserting a scan into the database.
+	 * 
+	 * @param scan
+	 *            the scan to insert.
+	 * @return the row ID of the newly inserted row, or -1 if an error occurred
+	 */
+	public long addScan(Scan scan) {
 
 		ContentValues values = new ContentValues();
 		values.put(COLUMN_LOCATION, scan.getLocation());
 		values.put(COLUMN_LATITUDE, scan.getLatitude());
 		values.put(COLUMN_LONGITUDE, scan.getLongitude());
-		values.put(COLUMN_TIMESTAMP, "2010-03-08 14:59:30.252");//scan.getTimestamp().toString());
-		
+		values.put(COLUMN_TIMESTAMP, "2010-03-08 14:59:30.252");// scan.getTimestamp().toString());
+
 		SQLiteDatabase db = this.getWritableDatabase();
 
-		db.insert(TABLE_SCANS, null, values);
+		long id = db.insert(TABLE_SCANS, null, values);
 		db.close();
+
+		return id;
 	}
 
 	public Scan findScan(String location) {
@@ -72,7 +79,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			scan.setLocation(cursor.getString(1));
 			scan.setLatitude(cursor.getFloat(2));
 			scan.setLongitude(cursor.getFloat(3));
-			scan.setTimestamp(Timestamp.valueOf(cursor.getString(4)));
+			scan.setTimestamp(cursor.getLong(4));
 			cursor.close();
 		} else {
 			scan = null;

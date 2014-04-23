@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.telephony.CellIdentityGsm;
 import android.telephony.CellInfo;
 import android.telephony.CellInfoGsm;
-import android.telephony.CellLocation;
 import android.telephony.CellSignalStrengthGsm;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.TelephonyManager;
@@ -19,10 +18,11 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class ScanService extends Service {
-	
+
 	private TelephonyManager telephonyManager;
 	private final static String TAG = "SpideyScan";
-	
+	private ScanDatabaseHandler scanDbHandler = new ScanDatabaseHandler(this, null, null, 1);
+
 	// TODO: Think about running scans multiple times over a minute or two.
 
 	@Override
@@ -31,15 +31,28 @@ public class ScanService extends Service {
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
 			startScan();
+
 		else
 			startSimpleScan ();
 
 		return Service.START_NOT_STICKY;
 	}
-	
+
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1) private void startScan ()
 	{
 		logMessage("starting tower scan... ");
+		Scan scan = new Scan();
+		
+		// TODO: Get location from user?
+		scan.setLocation("MIT");
+		
+		//TODO: use actual GPS Coordinates
+		scan.setLatitude(42.360091);
+		scan.setLongitude(-71.09416);
+		
+		scan.setTimestamp(System.currentTimeMillis());
+		
+		scanDbHandler.addScan(scan);
 		
 		List<CellInfo> cellInfos = (List<CellInfo>) this.telephonyManager.getAllCellInfo();
 		
@@ -68,7 +81,6 @@ public class ScanService extends Service {
 			for (NeighboringCellInfo cellInfo : cellInfos) {
 
 				logMessage( "cell-id:" + cellInfo.getCid() + ",lac: " + cellInfo.getLac() +  ",Received Signal Strength: " + cellInfo.getRssi() +  ",LAC: " + cellInfo.getLac());
-				
 				
 			}
 		}

@@ -1,13 +1,12 @@
 package com.example.spidey;
 
-import java.sql.Timestamp;
 
 public class Scan {
 	private int _id;
 	private String _location;
-	private float _latitude;
-	private float _longitude;
-	private Timestamp _timestamp;
+	private double _latitude;
+	private double _longitude;
+	private long _timestamp;
 
 	public Scan() {
 	}
@@ -16,7 +15,7 @@ public class Scan {
 		this._location = location;
 	}
 
-	public Scan(int id, String location, float latitude, float longitude, Timestamp timestamp) {
+	public Scan(int id, String location, float latitude, float longitude, long timestamp) {
 		this._id = id;
 		this._location = location;
 		this._latitude = latitude;
@@ -40,27 +39,27 @@ public class Scan {
 		return this._location;
 	}
 	
-	public void setLatitude(float latitude) {
+	public void setLatitude(double latitude) {
 		this._latitude = latitude;
 	}
 
-	public float getLatitude() {
+	public double getLatitude() {
 		return this._latitude;
 	}
 	
-	public void setLongitude(float longitude) {
+	public void setLongitude(double longitude) {
 		this._longitude = longitude;
 	}
 
-	public float getLongitude() {
+	public double getLongitude() {
 		return this._longitude;
 	}
 	
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(long timestamp) {
 		this._timestamp = timestamp;
 	}
 
-	public Timestamp getTimestamp() {
+	public long getTimestamp() {
 		return this._timestamp;
 	}
 }
