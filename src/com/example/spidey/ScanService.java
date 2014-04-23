@@ -32,6 +32,7 @@ public class ScanService extends Service {
 			Log.d("cell", "registered: " + cellInfoGsm.isRegistered());
 			Log.d("cell", cellIdentity.toString());
 			Log.d("cell", cellSignalStrengthGsm.toString());
+			
 		}
 		return Service.START_NOT_STICKY;
 	}

@@ -1,0 +1,3 @@
+[submodule "external/osmdroid"]
+	path = external/osmdroid
+	url = https://github.com/osmdroid/osmdroid.git

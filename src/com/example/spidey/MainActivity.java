@@ -1,5 +1,7 @@
 package com.example.spidey;
 
+import org.osmdroid.views.MapView;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
@@ -11,6 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 public class MainActivity extends Activity {
+	
+	private MapView mMapView;
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -20,8 +26,22 @@ public class MainActivity extends Activity {
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
 		
+		mMapView = (MapView)this.findViewById(R.id.mapview);
+	
+		
+		
+	}
+	
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
 		startService(new Intent(this, ScanService.class));
 	}
+
+
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
