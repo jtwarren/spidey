@@ -2,9 +2,11 @@ package com.example.spidey;
 
 import java.util.List;
 
+import android.annotation.TargetApi;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.telephony.CellIdentityGsm;
 import android.telephony.CellInfo;
@@ -21,6 +23,15 @@ public class ScanService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		this.telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
+		if (Build.VERSION.SDK_INT == Build.VERSION_CODES.JELLY_BEAN_MR1)
+			startScan();
+		
+
+		return Service.START_NOT_STICKY;
+	}
+	
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1) private void startScan ()
+	{
 		List<CellInfo> cellInfos = (List<CellInfo>) this.telephonyManager.getAllCellInfo();
 
 		for (CellInfo cellInfo : cellInfos) {
@@ -34,7 +45,6 @@ public class ScanService extends Service {
 			Log.d("cell", cellSignalStrengthGsm.toString());
 			
 		}
-		return Service.START_NOT_STICKY;
 	}
 
 	@Override
