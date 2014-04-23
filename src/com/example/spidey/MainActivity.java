@@ -83,10 +83,19 @@ public class MainActivity extends Activity {
 		else if (id == R.id.action_scan) {
 			runScan ();
 		}
+		else if (id == R.id.action_about) {
+			showAbout ();
+		}
 		
 		return super.onOptionsItemSelected(item);
 	}
 
+	private void showAbout ()
+	{
+		Intent intent = new Intent(this,AboutActivity.class);
+		startActivity(intent);
+	}
+	
 	private void runScan ()
 	{
 

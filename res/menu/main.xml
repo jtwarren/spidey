@@ -14,5 +14,11 @@
         android:showAsAction="always"
         android:title="@string/action_scan"/>
     
+     <item
+        android:id="@+id/action_about"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/action_about"/>
+    
 
 </menu>
