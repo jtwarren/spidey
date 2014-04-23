@@ -35,7 +35,7 @@ public class ScanDBHander extends SQLiteOpenHelper {
 		onCreate(db);
 	}
 
-	public void addProduct(Scan scan) {
+	public void addNewScan(Scan scan) {
 
 		ContentValues values = new ContentValues();
 		values.put(COLUMN_SCANNAME, scan.getScanName());
@@ -68,12 +68,12 @@ public class ScanDBHander extends SQLiteOpenHelper {
 		return scan;
 	}
 
-	public boolean deleteProduct(String productname) {
+	public boolean deleteScan(String scanId) {
 
 		boolean result = false;
 
 		String query = "Select * FROM " + TABLE_SCANS + " WHERE "
-				+ COLUMN_SCANNAME + " =  \"" + productname + "\"";
+				+ COLUMN_SCANNAME + " =  \"" + scanId + "\"";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 
