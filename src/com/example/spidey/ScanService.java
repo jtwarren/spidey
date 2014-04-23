@@ -16,6 +16,7 @@ import android.telephony.CellSignalStrengthGsm;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 public class ScanService extends Service {
 	
@@ -36,7 +37,7 @@ public class ScanService extends Service {
 	
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1) private void startScan ()
 	{
-		Log.d(TAG,"starting tower scan... ");
+		logMessage("starting tower scan... ");
 		
 		List<CellInfo> cellInfos = (List<CellInfo>) this.telephonyManager.getAllCellInfo();
 		
@@ -49,9 +50,7 @@ public class ScanService extends Service {
 				CellIdentityGsm cellIdentity = cellInfoGsm.getCellIdentity();
 				CellSignalStrengthGsm cellSignalStrengthGsm = cellInfoGsm.getCellSignalStrength();
 
-				Log.d(TAG, "registered: " + cellInfoGsm.isRegistered());
-				Log.d(TAG, "cellId: " + cellIdentity.toString());
-				Log.d(TAG, "cellSignalStrength: " + cellSignalStrengthGsm.toString());
+				logMessage( "registered: " + cellInfoGsm.isRegistered() + ",cellId: " + cellIdentity.toString() + ",cellSignalStrength: " + cellSignalStrengthGsm.toString());
 				
 			}
 		}
@@ -60,21 +59,23 @@ public class ScanService extends Service {
 
 	private void startSimpleScan ()
 	{
-		Log.d(TAG,"starting tower scan (old stylie)... ");
+		logMessage("starting tower scan (old stylie)... ");
 		
 		List<NeighboringCellInfo> cellInfos = telephonyManager.getNeighboringCellInfo();
 		if (cellInfos != null) {
 			for (NeighboringCellInfo cellInfo : cellInfos) {
 
-				Log.d(TAG, "cell-id:" + cellInfo.getCid());
-				Log.d(TAG,  "lac: " + cellInfo.getLac());
+				logMessage( "cell-id:" + cellInfo.getCid() + ",lac: " + cellInfo.getLac() +  ",Received Signal Strength: " + cellInfo.getRssi() +  ",LAC: " + cellInfo.getLac());
 				
-				Log.d(TAG, "Received Signal Strength: " + cellInfo.getRssi());
-				Log.d(TAG, "LAC: " + cellInfo.getLac());
-				Log.d(TAG,"=================");
 				
 			}
 		}
+	}
+	
+	private void logMessage (String msg)
+	{
+		Log.d(TAG, msg);
+		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 	}
 	
 	@Override
