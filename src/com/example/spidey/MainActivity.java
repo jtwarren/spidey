@@ -34,21 +34,20 @@ public class MainActivity extends Activity {
 	}
 	
 	
+		// Use this to test simple database CRUD
+		// Intent intent = new Intent(this, DatabaseActivity.class);
+		// startActivity(intent);
+
+	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		
-		
+		startService(new Intent(this, ScanService.class));
 	}
-
-
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;

@@ -33,18 +33,23 @@ public class ScanService extends Service {
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1) private void startScan ()
 	{
 		List<CellInfo> cellInfos = (List<CellInfo>) this.telephonyManager.getAllCellInfo();
+		
+		// TODO: better error handling of null cellinfos
+		if (cellInfos != null) {
+			for (CellInfo cellInfo : cellInfos) {
 
-		for (CellInfo cellInfo : cellInfos) {
-			CellInfoGsm cellInfoGsm = (CellInfoGsm) cellInfo;
+				CellInfoGsm cellInfoGsm = (CellInfoGsm) cellInfo;
 
-			CellIdentityGsm cellIdentity = cellInfoGsm.getCellIdentity();
-			CellSignalStrengthGsm cellSignalStrengthGsm = cellInfoGsm.getCellSignalStrength();
+				CellIdentityGsm cellIdentity = cellInfoGsm.getCellIdentity();
+				CellSignalStrengthGsm cellSignalStrengthGsm = cellInfoGsm.getCellSignalStrength();
 
-			Log.d("cell", "registered: " + cellInfoGsm.isRegistered());
-			Log.d("cell", cellIdentity.toString());
-			Log.d("cell", cellSignalStrengthGsm.toString());
-			
+				Log.d("cell", "registered: " + cellInfoGsm.isRegistered());
+				Log.d("cell", cellIdentity.toString());
+				Log.d("cell", cellSignalStrengthGsm.toString());
+				
+			}
 		}
+		
 	}
 
 	@Override
