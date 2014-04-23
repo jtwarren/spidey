@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class ScanDatabaseHandler extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 4;
 	private static final String DATABASE_NAME = "scanDB.db";
 	private static final String TABLE_SCANS = "scans";
 
@@ -28,7 +28,7 @@ public class ScanDatabaseHandler extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 
 		String CREATE_SCANS_TABLE = "CREATE TABLE " + TABLE_SCANS + "("
-				+ COLUMN_ID + " INTEGER PRIMARY KEY," + COLUMN_LOCATION
+				+ COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + COLUMN_LOCATION
 				+ " TEXT, " + COLUMN_LATITUDE + " DECIMAL, " + COLUMN_LONGITUDE
 				+ " DECIMAL, " + COLUMN_TIMESTAMP + " TEXT" + ")";
 		db.execSQL(CREATE_SCANS_TABLE);
@@ -60,6 +60,7 @@ public class ScanDatabaseHandler extends SQLiteOpenHelper {
 		long id = db.insert(TABLE_SCANS, null, values);
 		db.close();
 
+		
 		return id;
 	}
 
