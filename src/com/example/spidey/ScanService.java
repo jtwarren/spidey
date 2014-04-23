@@ -18,6 +18,8 @@ import android.util.Log;
 public class ScanService extends Service {
 	
 	private TelephonyManager telephonyManager;
+	
+	// TODO: Think about running scans multiple times over a minute or two.
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {

@@ -32,8 +32,8 @@ public class MainActivity extends Activity {
 		}
 	
 		// Use this to test simple database CRUD
-		// Intent intent = new Intent(this, DatabaseActivity.class);
-		// startActivity(intent);
+		 Intent intent = new Intent(this, DatabaseActivity.class);
+		 startActivity(intent);
 
 	}
 
