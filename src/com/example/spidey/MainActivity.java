@@ -1,10 +1,10 @@
 package com.example.spidey;
 
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,30 +14,33 @@ import android.view.ViewGroup;
 
 public class MainActivity extends Activity {
 	
-	private MapView mMapView;
 	
+	private MapFragment mMapFragment;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		if (savedInstanceState == null) {
+			mMapFragment = new MapFragment();
+			
 			getFragmentManager().beginTransaction()
-					.add(R.id.container, new PlaceholderFragment()).commit();
+					.add(R.id.container, mMapFragment).commit();
+			
+			
 		}
 		
-		mMapView = (MapView)this.findViewById(R.id.mapview);
 	
-		
-		
 	}
+	
 	
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 		
-		startService(new Intent(this, ScanService.class));
+		
+		
 	}
 
 
@@ -66,9 +69,11 @@ public class MainActivity extends Activity {
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
-	public static class PlaceholderFragment extends Fragment {
+	public static class MapFragment extends Fragment {
 
-		public PlaceholderFragment() {
+		MapView mMapView;
+		
+		public MapFragment() {
 		}
 
 		@Override
@@ -76,7 +81,21 @@ public class MainActivity extends Activity {
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
+			
+			setupMap("0","0",5,rootView);
+			
 			return rootView;
+		}
+		
+
+		protected void setupMap (String lat, String lon, int zoomLevel, View view)
+		{
+			mMapView = (MapView)view.findViewById(R.id.mapview);
+			mMapView.setBuiltInZoomControls(true);
+			mMapView.getController().setZoom(zoomLevel);
+	        mMapView.getController().setCenter(GeoPoint.fromDoubleString(lat + ',' + lon,','));
+			
+		
 		}
 	}
 
