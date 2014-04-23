@@ -1,5 +1,7 @@
 package com.example.spidey;
 
+import java.sql.Timestamp;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,12 +11,15 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private static final String DATABASE_NAME = "scanDB.db";
 	private static final String TABLE_SCANS = "scans";
 
 	public static final String COLUMN_ID = "_id";
-	public static final String COLUMN_SCANNAME = "scanname";
+	public static final String COLUMN_LOCATION = "location";
+	public static final String COLUMN_LATITUDE = "latitude";
+	public static final String COLUMN_LONGITUDE = "longitude";
+	public static final String COLUMN_TIMESTAMP = "timestamp";
 
 	public DatabaseHandler(Context context, String name, CursorFactory factory,
 			int version) {
@@ -23,9 +28,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {
+
 		String CREATE_SCANS_TABLE = "CREATE TABLE " + TABLE_SCANS + "("
-				+ COLUMN_ID + " INTEGER PRIMARY KEY," + COLUMN_SCANNAME
-				+ " TEXT" + ")";
+				+ COLUMN_ID + " INTEGER PRIMARY KEY," + COLUMN_LOCATION
+				+ " TEXT, " + COLUMN_LATITUDE + " DECIMAL, " + COLUMN_LONGITUDE
+				+ " DECIMAL, " + COLUMN_TIMESTAMP + " TEXT" + ")";
 		db.execSQL(CREATE_SCANS_TABLE);
 	}
 
@@ -38,17 +45,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public void addScan(Scan scan) {
 
 		ContentValues values = new ContentValues();
-		values.put(COLUMN_SCANNAME, scan.getScanName());
-
+		values.put(COLUMN_LOCATION, scan.getLocation());
+		values.put(COLUMN_LATITUDE, scan.getLatitude());
+		values.put(COLUMN_LONGITUDE, scan.getLongitude());
+		values.put(COLUMN_TIMESTAMP, "2010-03-08 14:59:30.252");//scan.getTimestamp().toString());
+		
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		db.insert(TABLE_SCANS, null, values);
 		db.close();
 	}
 
-	public Scan findScan(String scanname) {
+	public Scan findScan(String location) {
 		String query = "Select * FROM " + TABLE_SCANS + " WHERE "
-				+ COLUMN_SCANNAME + " =  \"" + scanname + "\"";
+				+ COLUMN_LOCATION + " =  \"" + location + "\"";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -59,7 +69,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		if (cursor.moveToFirst()) {
 			cursor.moveToFirst();
 			scan.setID(Integer.parseInt(cursor.getString(0)));
-			scan.setScanName(cursor.getString(1));
+			scan.setLocation(cursor.getString(1));
+			scan.setLatitude(cursor.getFloat(2));
+			scan.setLongitude(cursor.getFloat(3));
+			scan.setTimestamp(Timestamp.valueOf(cursor.getString(4)));
 			cursor.close();
 		} else {
 			scan = null;
@@ -68,12 +81,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return scan;
 	}
 
-	public boolean deleteScan(String scanId) {
+	public boolean deleteScan(String location) {
 
 		boolean result = false;
 
 		String query = "Select * FROM " + TABLE_SCANS + " WHERE "
-				+ COLUMN_SCANNAME + " =  \"" + scanId + "\"";
+				+ COLUMN_LOCATION + " =  \"" + location + "\"";
 
 		SQLiteDatabase db = this.getWritableDatabase();
 

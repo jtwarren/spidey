@@ -23,6 +23,8 @@ public class ScanService extends Service {
 	private TelephonyManager telephonyManager;
 	private final static String TAG = "SpideyScan";
 	
+	// TODO: Think about running scans multiple times over a minute or two.
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		this.telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
