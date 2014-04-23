@@ -1,0 +1,8 @@
+.DS_Store
+obj/*
+bin/*
+gen/*
+local.properties
+build.xml
+.settings/*
+.settings
