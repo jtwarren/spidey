@@ -40,7 +40,6 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		startService(new Intent(this, ScanService.class));
 	}
 
 	@Override
@@ -59,9 +58,18 @@ public class MainActivity extends Activity {
 		if (id == R.id.action_settings) {
 			return true;
 		}
+		else if (id == R.id.action_scan) {
+			runScan ();
+		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 
+	private void runScan ()
+	{
+
+		startService(new Intent(this, ScanService.class));
+	}
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */

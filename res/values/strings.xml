@@ -2,12 +2,14 @@
 <resources>
 
     <string name="app_name">Spidey</string>
-    <string name="action_settings">Settings</string>
     <string name="scanid_text">Scan ID</string>
     <string name="idvalue_text">ID Not Assigned</string>
     <string name="scanname_text">Scan Name</string>
     <string name="add_string">Add</string>
     <string name="find_text">Find</string>
     <string name="delete_text">Delete</string>
-
+    
+    <string name="action_settings">Settings</string>
+    <string name="action_scan">Scan</string>
+    
 </resources>
