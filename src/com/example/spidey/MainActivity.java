@@ -1,5 +1,7 @@
 package com.example.spidey;
 
+import java.io.IOException;
+
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -9,6 +11,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +23,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.example.spidey.cloud.OpenCellIdLookup;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -91,8 +95,42 @@ public class MainActivity extends Activity {
 		for (int i = 1; i < 6; i++)
 			mMapFragment.addResult("Tower Scan " + i + "\nresult info");
 		
+		doCellLookup ();
 		
 	}
+	
+	private void doCellLookup ()
+	{
+		new CellLookupOperation().execute("");
+		
+	}
+		
+		
+	private class CellLookupOperation extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            
+        	try {
+				OpenCellIdLookup.findMatchingCell("310","4384","65","2578");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
+    }
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
