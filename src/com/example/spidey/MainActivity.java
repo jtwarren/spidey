@@ -1,5 +1,7 @@
 package com.example.spidey;
 
+import java.io.IOException;
+
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -7,7 +9,9 @@ import org.osmdroid.views.MapView;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,7 +19,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 
+import com.example.spidey.cloud.OpenCellIdLookup;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
@@ -83,7 +91,46 @@ public class MainActivity extends Activity {
 	{
 
 		startService(new Intent(this, ScanService.class));
+		
+		for (int i = 1; i < 6; i++)
+			mMapFragment.addResult("Tower Scan " + i + "\nresult info");
+		
+		doCellLookup ();
+		
 	}
+	
+	private void doCellLookup ()
+	{
+		new CellLookupOperation().execute("");
+		
+	}
+		
+		
+	private class CellLookupOperation extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... params) {
+            
+        	try {
+				OpenCellIdLookup.findMatchingCell("310","4384","65","2578");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+        }
+
+        @Override
+        protected void onPreExecute() {
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+        }
+    }
 	/**
 	 * A placeholder fragment containing a simple view.
 	 */
@@ -91,6 +138,7 @@ public class MainActivity extends Activity {
 
 		MapView mMapView;
 		Activity mActivity;
+		LinearLayout mViewResults;
 		
 		public MapFragment() {
 		}
@@ -103,9 +151,37 @@ public class MainActivity extends Activity {
 			
 			setupMap("0","0",DEFAULT_MAP_ZOOM,rootView);
 			
+			mViewResults = (LinearLayout)rootView.findViewById(R.id.results);
+			
 			mActivity = this.getActivity();
 			
 			return rootView;
+		}
+		
+		public void addResult (String text)
+		{
+/**
+ *  <Button
+        android:text="Scan Result 1"
+        android:textSize="24sp"
+        android:textColor="#000000"
+        
+        android:background="#cc999999"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="center"
+    android:layout_margin="6dp"
+    
+ */
+			Button btn = new Button(mActivity);
+			btn.setText(text);
+			btn.setTextSize(24);
+			btn.setTextColor(Color.BLACK);
+			btn.setPadding(3, 3, 3, 3);
+			btn.setBackgroundColor(Color.parseColor("#CC999999"));
+			LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+			lp.setMargins(6, 6, 6, 6);
+			mViewResults.addView(btn,lp);
 		}
 		
 

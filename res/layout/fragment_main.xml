@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:layout_height="match_parent">
     
     <org.osmdroid.views.MapView
         android:id="@+id/mapview"
@@ -11,4 +10,31 @@
         android:layout_height="match_parent"
         tilesource="Mapnik"
         />
-</LinearLayout>
+    
+    <LinearLayout 
+    android:layout_width="150dp"
+    android:layout_height="match_parent"
+    android:layout_gravity="right"
+    android:orientation="vertical"
+    android:gravity="top"
+    android:layout_margin="12dp"
+    android:id="@+id/results"
+    >
+        
+        <!-- 
+        <Button
+        android:text="Scan Result 1"
+        android:textSize="24sp"
+        android:textColor="#000000"
+        
+        android:background="#cc999999"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="center"
+    android:layout_margin="6dp"
+        />
+         -->
+        
+        
+    </LinearLayout>
+</FrameLayout>
