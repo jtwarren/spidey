@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class ScanDBHander extends SQLiteOpenHelper {
+public class DatabaseHandler extends SQLiteOpenHelper {
 
 	private static final int DATABASE_VERSION = 1;
 	private static final String DATABASE_NAME = "scanDB.db";
@@ -16,7 +16,7 @@ public class ScanDBHander extends SQLiteOpenHelper {
 	public static final String COLUMN_ID = "_id";
 	public static final String COLUMN_SCANNAME = "scanname";
 
-	public ScanDBHander(Context context, String name, CursorFactory factory,
+	public DatabaseHandler(Context context, String name, CursorFactory factory,
 			int version) {
 		super(context, DATABASE_NAME, factory, DATABASE_VERSION);
 	}

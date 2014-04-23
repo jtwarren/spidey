@@ -29,7 +29,7 @@ public class DatabaseActivity extends Activity {
 	}
 
 	public void newScan(View view) {
-		ScanDBHander dbHandler = new ScanDBHander(this, null, null, 1);
+		DatabaseHandler dbHandler = new DatabaseHandler(this, null, null, 1);
 
 		Scan scan = new Scan(scanBox.getText().toString());
 
@@ -38,7 +38,7 @@ public class DatabaseActivity extends Activity {
 	}
 
 	public void lookupScan(View view) {
-		ScanDBHander dbHandler = new ScanDBHander(this, null, null, 1);
+		DatabaseHandler dbHandler = new DatabaseHandler(this, null, null, 1);
 
 		Scan scan = dbHandler.findScan(scanBox.getText().toString());
 
@@ -50,7 +50,7 @@ public class DatabaseActivity extends Activity {
 	}
 
 	public void removeScan(View view) {
-		ScanDBHander dbHandler = new ScanDBHander(this, null, null, 1);
+		DatabaseHandler dbHandler = new DatabaseHandler(this, null, null, 1);
 
 		boolean result = dbHandler.deleteScan(scanBox.getText().toString());
 
