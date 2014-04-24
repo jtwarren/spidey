@@ -36,7 +36,7 @@ public class MainActivity extends Activity {
 	
 	private final static String TAG = "Spidey";
 	
-	private final static int DEFAULT_MAP_ZOOM = 17;
+	private final static int DEFAULT_MAP_ZOOM = 16;
 	
 	private MapFragment mMapFragment;
 	
@@ -148,6 +148,7 @@ public class MainActivity extends Activity {
 		MapView mMapView;
 		Activity mActivity;
 		LinearLayout mViewResults;
+		View mRootView;
 		
 		public MapFragment() {
 		}
@@ -155,16 +156,18 @@ public class MainActivity extends Activity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
+			mRootView = inflater.inflate(R.layout.fragment_main, container,
 					false);
 			
-			setupMap("0","0",DEFAULT_MAP_ZOOM,rootView);
 			
-			mViewResults = (LinearLayout)rootView.findViewById(R.id.results);
+			mViewResults = (LinearLayout)mRootView.findViewById(R.id.results);
 			
 			mActivity = this.getActivity();
 			
-			return rootView;
+
+	        doLocation();
+			
+			return mRootView;
 		}
 		
 		public void addResult (String text)
@@ -197,12 +200,15 @@ public class MainActivity extends Activity {
 		protected void setupMap (String lat, String lon, int zoomLevel, View view)
 		{
 			mMapView = (MapView)view.findViewById(R.id.mapview);
+			mMapView.getOverlayManager().getTilesOverlay().setOvershootTileCache(300);
+		      
 			mMapView.setTileSource(TileSourceFactory.MAPNIK);
 			mMapView.setBuiltInZoomControls(true);
+			mMapView.setMultiTouchControls(true);
+			
 			mMapView.getController().setZoom(zoomLevel);
 	        mMapView.getController().setCenter(GeoPoint.fromDoubleString(lat + ',' + lon,','));
-			
-	        doLocation();
+	        
 		}
 		
 		private LocationClient locationclient;
@@ -239,9 +245,9 @@ public class MainActivity extends Activity {
 		@Override
 		public void onLocationChanged(Location loc) {
 			
-			if (mMapView != null)
-			  mMapView.getController().setCenter(new GeoPoint(loc.getLatitude(),loc.getLongitude()));
-				
+			if (mMapView == null)
+				setupMap(loc.getLatitude()+"",loc.getLongitude()+"",DEFAULT_MAP_ZOOM,mRootView);
+			
 			
 		}	
 		
