@@ -14,6 +14,7 @@ import android.telephony.CellInfoGsm;
 import android.telephony.CellSignalStrengthGsm;
 import android.telephony.NeighboringCellInfo;
 import android.telephony.TelephonyManager;
+import android.telephony.gsm.GsmCellLocation;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -62,21 +63,24 @@ public class ScanService extends Service {
 		if (cellInfos != null) {
 			for (CellInfo cellInfo : cellInfos) {
 
-				CellInfoGsm cellInfoGsm = (CellInfoGsm) cellInfo;
-
-				CellIdentityGsm cellIdentity = cellInfoGsm.getCellIdentity();
-				CellSignalStrengthGsm cellSignalStrengthGsm = cellInfoGsm.getCellSignalStrength();
-
-				CellIdentity cell = new CellIdentity(scan_id,
-						cellIdentity.getCid(), cellIdentity.getLac(),
-						cellIdentity.getMcc(), cellIdentity.getMnc());
-				cellDbHandler.addTower(cell);
-
-				logMessage("registered: " + cellInfoGsm.isRegistered()
-						+ ",cellId: " + cellIdentity.toString()
-						+ ",cellSignalStrength: "
-						+ cellSignalStrengthGsm.toString());
-
+				if (cellInfo instanceof CellInfoGsm)
+				{
+					CellInfoGsm cellInfoGsm = (CellInfoGsm) cellInfo;
+	
+					CellIdentityGsm cellIdentity = cellInfoGsm.getCellIdentity();
+					CellSignalStrengthGsm cellSignalStrengthGsm = cellInfoGsm.getCellSignalStrength();
+	
+					CellIdentity cell = new CellIdentity(scan_id,
+							cellIdentity.getCid(), cellIdentity.getLac(),
+							cellIdentity.getMcc(), cellIdentity.getMnc());
+					
+					cellDbHandler.addTower(cell);
+	
+					logMessage("registered: " + cellInfoGsm.isRegistered()
+							+ ",cellId: " + cellIdentity.toString()
+							+ ",cellSignalStrength: "
+							+ cellSignalStrengthGsm.toString());
+				}
 			}
 		}
 
@@ -85,6 +89,15 @@ public class ScanService extends Service {
 	private void startSimpleScan() {
 		logMessage("starting tower scan (old stylie)... ");
 
+		String mccMnc = telephonyManager.getNetworkOperator();
+		
+		if (telephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
+		    final GsmCellLocation location = (GsmCellLocation) telephonyManager.getCellLocation();
+		    if (location != null) {
+		        logMessage("mccMnc: " + mccMnc + ",LAC: " + location.getLac() + " CID: " + location.getCid());
+		    }
+		}
+		
 		List<NeighboringCellInfo> cellInfos = telephonyManager
 				.getNeighboringCellInfo();
 		if (cellInfos != null) {
