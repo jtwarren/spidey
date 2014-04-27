@@ -17,6 +17,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
+	
+	private static DatabaseHelper mInstance = null;
 
 	// Logcat tag
 	private static final String LOG = DatabaseHelper.class.getName();
@@ -71,9 +73,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ COLUMN_SCAN_ID + " INTEGER," + COLUMN_CELL_ID + " INTEGER,"
 			+ COLUMN_CREATED_AT + " DATETIME" + ")";
 
-	public DatabaseHelper(Context context) {
+	private DatabaseHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
+	
+	 public static DatabaseHelper getInstance(Context context) {
+	        if (mInstance == null) {
+	            mInstance = new DatabaseHelper(context.getApplicationContext());
+	        }
+	        return mInstance;
+	    }
 
 	@Override
 	public void onCreate(SQLiteDatabase db) {

@@ -1,7 +1,6 @@
 package com.spideyapp;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
@@ -32,8 +31,6 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.spideyapp.cloud.OpenCellIdLookup;
-import com.spideyapp.sqlite.helper.DatabaseHelper;
-import com.spideyapp.sqlite.model.Scan;
 
 public class MainActivity extends Activity {
 
@@ -53,13 +50,6 @@ public class MainActivity extends Activity {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, mMapFragment).commit();
 
-		}
-		
-		DatabaseHelper db = new DatabaseHelper(getApplicationContext());
-		List<Scan> scans = db.getAllScans();
-		Log.e(TAG, "TESTING");
-		for (Scan scan : scans) {
-			Log.e(TAG, scan.toString());
 		}
 		
 	}
@@ -88,6 +78,8 @@ public class MainActivity extends Activity {
 			runScan();
 		} else if (id == R.id.action_about) {
 			showAbout();
+		} else if (id == R.id.action_scans) {
+			showScans();
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -95,6 +87,11 @@ public class MainActivity extends Activity {
 
 	private void showAbout() {
 		Intent intent = new Intent(this, AboutActivity.class);
+		startActivity(intent);
+	}
+	
+	private void showScans() {
+		Intent intent = new Intent(this, ScansActivity.class);
 		startActivity(intent);
 	}
 
