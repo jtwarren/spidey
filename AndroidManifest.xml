@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.spidey"
+    package="com.spideyapp"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -24,7 +24,7 @@
         android:screenOrientation="portrait"
         >
         <activity
-            android:name="com.example.spidey.MainActivity"
+            android:name="com.spideyapp.MainActivity"
             android:label="@string/app_name" 
              android:screenOrientation="portrait"
             >
@@ -35,11 +35,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.spidey.DatabaseActivity"
+            android:name="com.spideyapp.DatabaseActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.example.spidey.AboutActivity" >
+            android:name="com.spideyapp.AboutActivity" >
         </activity>
         <service android:name="ScanService" >
         </service>
