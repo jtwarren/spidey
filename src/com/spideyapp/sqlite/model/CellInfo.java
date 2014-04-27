@@ -41,10 +41,10 @@ public class CellInfo {
 	public void setMNC(int mnc) {
 		this._mnc = mnc;
 	}
-	
-	public void setCreatedAt(String created_at){
-        this._created_at = created_at;
-    }
+
+	public void setCreatedAt(String created_at) {
+		this._created_at = created_at;
+	}
 
 	// Getters
 
@@ -71,8 +71,39 @@ public class CellInfo {
 	public int getMNC() {
 		return this._mnc;
 	}
-	
+
 	public String getCreatedAt() {
 		return this._created_at;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + _cid;
+		result = prime * result + _lac;
+		result = prime * result + _mcc;
+		result = prime * result + _mnc;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CellInfo other = (CellInfo) obj;
+		if (this._cid != other.getCID())
+			return false;
+		if (this._lac != other.getLAC())
+			return false;
+		if (this._mcc != other.getMCC())
+			return false;
+		if (this._mnc != other.getMNC())
+			return false;
+		return true;
 	}
 }

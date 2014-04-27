@@ -42,7 +42,7 @@ public class ScanService extends Service {
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	private void startScan() {
-		db = new DatabaseHelper(getApplicationContext());
+		db = DatabaseHelper.getInstance(getApplicationContext());
 		
 		logMessage("starting tower scan... ");
 		Scan scan = new Scan();

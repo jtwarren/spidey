@@ -9,6 +9,12 @@
         android:title="@string/action_settings"/>
     
     <item
+        android:id="@+id/action_scans"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/action_scans"/>
+    
+    <item
         android:id="@+id/action_scan"
         android:orderInCategory="100"
         android:showAsAction="always"
