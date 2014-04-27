@@ -1,9 +1,5 @@
 package com.spideyapp.sqlite.model;
 
-import java.util.List;
-
-import com.spideyapp.CellIdentity;
-
 public class Scan {
 	private long _id;
 	private String _location;
