@@ -18,10 +18,9 @@ import android.util.Log;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 	
+	private static final String TAG = "DatabaseHelper";
+	
 	private static DatabaseHelper mInstance = null;
-
-	// Logcat tag
-	private static final String LOG = DatabaseHelper.class.getName();
 
 	// Database Version
 	private static final int DATABASE_VERSION = 1;
@@ -130,7 +129,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		String selectQuery = "SELECT  * FROM " + TABLE_SCANS + " WHERE "
 				+ COLUMN_ID + " = " + scan_id;
 
-		Log.d(LOG, selectQuery);
+		Log.d(TAG, selectQuery);
 
 		Cursor c = db.rawQuery(selectQuery, null);
 
@@ -154,7 +153,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		List<Scan> scans = new ArrayList<Scan>();
 		String selectQuery = "SELECT  * FROM " + TABLE_SCANS;
 
-		Log.d(LOG, selectQuery);
+		Log.d(TAG, selectQuery);
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
@@ -262,7 +261,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		List<CellInfo> cells = new ArrayList<CellInfo>();
 		String selectQuery = "SELECT  * FROM " + TABLE_CELLS;
 
-		Log.d(LOG, selectQuery);
+		Log.d(TAG, selectQuery);
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
@@ -322,7 +321,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ " = " + "tt." + COLUMN_SCAN_ID + " AND tc." + COLUMN_ID + " = "
 				+ "tt." + COLUMN_CELL_ID;
 
-		Log.d(LOG, selectQuery);
+		Log.d(TAG, selectQuery);
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
