@@ -1,66 +1,78 @@
 package com.spideyapp.sqlite.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Scan {
-	private long _id;
-	private String _location;
-	private double _latitude;
-	private double _longitude;
-	private String _created_at;
+	private long mId;
+	private String mLocation;
+	private double mLatitude;
+	private double mLongitude;
+	private String mCreatedAt;
+	private List<CellInfo> mCellInfos = new ArrayList<CellInfo>();
 
 	public Scan() {
 	}
 
 	public Scan(String location) {
-		this._location = location;
+		this.mLocation = location;
 	}
 
-	public Scan(long id, String location, float latitude, float longitude, String created_at) {
-		this._id = id;
-		this._location = location;
-		this._latitude = latitude;
-		this._longitude = longitude;
-		this._created_at = created_at;
+	public Scan(long id, String location, float latitude, float longitude, String createdAt) {
+		this.mId = id;
+		this.mLocation = location;
+		this.mLatitude = latitude;
+		this.mLongitude = longitude;
+		this.mCreatedAt = createdAt;
 	}
 
 	public void setId(int id) {
-		this._id = id;
+		this.mId = id;
 	}
 
 	public void setLocation(String location) {
-		this._location = location;
+		this.mLocation = location;
 	}
 
 	public void setLatitude(double latitude) {
-		this._latitude = latitude;
+		this.mLatitude = latitude;
 	}
 
 	public void setLongitude(double longitude) {
-		this._longitude = longitude;
+		this.mLongitude = longitude;
 	}
 
-	public void setCreatedAt(String created_at){
-        this._created_at = created_at;
+	public void setCreatedAt(String createdAt){
+        this.mCreatedAt = createdAt;
     }
+	
+	public void addCellInfo(CellInfo cellInfo) {
+		this.mCellInfos.add(cellInfo);
+	}
 
 	// Getters
 
 	public long getId() {
-		return this._id;
+		return this.mId;
 	}
 
 	public String getLocation() {
-		return this._location;
+		return this.mLocation;
 	}
 
 	public double getLatitude() {
-		return this._latitude;
+		return this.mLatitude;
 	}
 
 	public double getLongitude() {
-		return this._longitude;
+		return this.mLongitude;
 	}
 
 	public String getCreatedAt() {
-		return this._created_at;
+		return this.mCreatedAt;
+	}
+	
+	public List<CellInfo> getCellInfos() {
+		return this.mCellInfos;
 	}
 }
