@@ -237,8 +237,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	/**
 	 * Creating cell
+	 * @param scan_id 
 	 */
-	public long createCell(CellInfo cell) {
+	public long createCell(CellInfo cell, long scan_id) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
@@ -250,6 +251,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		// insert row
 		long cell_id = db.insert(TABLE_CELLS, null, values);
+		
+		// create join
+		createScanCell(scan_id, cell_id);
 
 		return cell_id;
 	}

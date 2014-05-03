@@ -1,6 +1,9 @@
 package com.spideyapp;
 
+import java.util.List;
+
 import com.spideyapp.sqlite.helper.DatabaseHelper;
+import com.spideyapp.sqlite.model.CellInfo;
 import com.spideyapp.sqlite.model.Scan;
 
 import android.app.Activity;
@@ -35,6 +38,9 @@ public class ScanDetails extends Activity{
         
         Scan scan = mDb.getScan(scan_id);
         scanTitle.setText(scan.getId() + ": " + scan.getLocation() + " " + scan.getCreatedAt());
+        
+        List<CellInfo> cells = mDb.getAllCellsByScanId(scan.getId());
+        Log.d(TAG, "cells: " + cells);
        
          
     }
