@@ -5,6 +5,7 @@ import java.util.List;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -26,6 +27,10 @@ public class ScansActivity extends ListActivity {
         
         mDb = DatabaseHelper.getInstance(this);
         List<Scan> scans = mDb.getAllScans();
+        
+        for (Scan scan : scans) {
+        	Log.d(TAG, "" + scan.getId());
+        }
 
         // use the SimpleCursorAdapter to show the
         // elements in a ListView
@@ -40,7 +45,8 @@ public class ScansActivity extends ListActivity {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 	              Intent i = new Intent(getApplicationContext(), ScanDetails.class);
-	              i.putExtra("scan_id", id);
+	              // TODO: The id is currently off by one so quick fix below.
+	              i.putExtra("scan_id", id + 1);
 	              startActivity(i);
 			}
         });
