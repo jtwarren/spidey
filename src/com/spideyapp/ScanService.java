@@ -75,7 +75,7 @@ public class ScanService extends Service {
 							cellIdentity.getCid(), cellIdentity.getLac(),
 							cellIdentity.getMcc(), cellIdentity.getMnc());
 
-					db.createCell(cell);
+					db.createCell(cell, scan_id);
 
 					logMessage("registered: " + cellInfoGsm.isRegistered()
 							+ ",cellId: " + cellIdentity.toString()
