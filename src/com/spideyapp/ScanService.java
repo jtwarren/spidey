@@ -27,10 +27,14 @@ public class ScanService extends Service {
 	private final static String TAG = "SpideyScan";
 	private DatabaseHelper db;
 
+	private String lastScanName;
+	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		this.telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
+		lastScanName = intent.getStringExtra("scanname");
+		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
 			startScan();
 
@@ -48,7 +52,7 @@ public class ScanService extends Service {
 		Scan scan = new Scan();
 
 		// TODO: Get location from user?
-		scan.setLocation("MIT");
+		scan.setLocation(lastScanName);
 
 		// TODO: use actual GPS Coordinates
 		scan.setLatitude(42.360091);
