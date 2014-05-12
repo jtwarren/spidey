@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-public class ScanDetails extends Activity{
+public class ScanDetailsActivity extends Activity{
 	
 	private static final String TAG = "ScanDetails";
 	

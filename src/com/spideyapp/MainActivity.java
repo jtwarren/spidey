@@ -7,12 +7,15 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 
@@ -97,12 +101,29 @@ public class MainActivity extends Activity {
 
 	private void runScan() {
 
-		startService(new Intent(this, ScanService.class));
 
-		for (int i = 1; i < 6; i++)
-			mMapFragment.addResult("Tower Scan " + i + "\nresult info");
-
-		doCellLookup();
+		// Set an EditText view to get user input 
+		final EditText input = new EditText(this);
+		
+		new AlertDialog.Builder(this)
+	    .setTitle("Scan Name")
+	    .setMessage("Please enter a name for this scan (your location, place, etc)")
+	    .setView(input)
+	    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int whichButton) {
+	            Editable value = input.getText(); 
+	            
+	            Intent intent = new Intent(MainActivity.this, ScanService.class); 
+	            intent.putExtra("scanname", value.toString());
+	    		//start the background scan
+	    		startService(intent);
+	        }
+	    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int whichButton) {
+	            // Do nothing.
+	        }
+	    }).show();
+		
 
 	}
 
@@ -116,14 +137,20 @@ public class MainActivity extends Activity {
 		protected String doInBackground(String... params) {
 
 			try {
-				OpenCellIdLookup.findMatchingCell("310", "4384", "65", "2578");
+				String mcc, mnc, lac, cellId;
+				
+				mcc = params[0];
+				mnc = params[1];
+				lac = params[2];
+				cellId = params[3];
+				
+				OpenCellIdLookup.findMatchingCell(mcc, mnc, lac, cellId);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return null;
 		}
-
 		@Override
 		protected void onPostExecute(String result) {
 		}

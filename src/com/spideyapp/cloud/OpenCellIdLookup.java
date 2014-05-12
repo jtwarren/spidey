@@ -15,7 +15,7 @@ public class OpenCellIdLookup {
 	private final static String QUERY_BASE = "http://opencellid.org/measure/getByCellData?";
 	private final static String QUERY_END = "full=true&format=csv/";
 	
-	public static void findMatchingCell (String mcc, String mnc, String lac, String cellId) throws IOException
+	public static String findMatchingCell (String mcc, String mnc, String lac, String cellId) throws IOException
 	{
 		StringBuffer query = new StringBuffer();
 		query.append(QUERY_BASE);
@@ -29,22 +29,26 @@ public class OpenCellIdLookup {
 		URLConnection conn = url.openConnection();
 		
 		BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		
+		StringBuffer result = new StringBuffer();
 		String line = null;
 		
 		while ((line = reader.readLine())!=null)
 		{
-			Log.d("OpenCellId",line);
+			result.append(line).append('\n');
 		}
 		
 		reader.close();
+		
+		return result.toString();
 		
 	}
 	
 	public static void main (String[] args) throws IOException
 	{
 	
-		OpenCellIdLookup.findMatchingCell("310","4384","65","2578");
+		String result = OpenCellIdLookup.findMatchingCell("310","4384","65","2578");
+		
+		System.out.println(result);
 	}
 	
 	//id	mcc	mnc	lac	cellid	lat	lon	created_at	measured_at	signal	rating	speed	direction
