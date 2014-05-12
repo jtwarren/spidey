@@ -45,7 +45,7 @@
             android:name="com.spideyapp.ScansActivity" >
         </activity>
                 <activity
-            android:name="com.spideyapp.ScanDetails" >
+            android:name="com.spideyapp.ScanDetailsActivity" >
         </activity>
         <service android:name="ScanService" >
         </service>
