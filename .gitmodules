@@ -1,3 +1,6 @@
 [submodule "external/osmdroid"]
 	path = external/osmdroid
 	url = https://github.com/osmdroid/osmdroid.git
+[submodule "external/showcaseview"]
+	path = external/showcaseview
+	url = https://github.com/amlcurran/ShowcaseView.git
