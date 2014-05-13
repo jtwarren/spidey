@@ -1,22 +1,24 @@
 package com.spideyapp;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.SimpleLocationOverlay;
 
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Movie;
+import android.graphics.Paint;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -174,7 +176,14 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
+		 registerReceiver(receiver, new IntentFilter(ScanService.NOTIFICATION));
 	}
+	
+	@Override
+	  protected void onPause() {
+	    super.onPause();
+	    unregisterReceiver(receiver);
+	  }
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -256,6 +265,7 @@ public class MainActivity extends Activity {
 	            }
 	    		//start the background scan
 	    		startService(intent);
+	    		
 	        }
 	    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int whichButton) {
@@ -403,7 +413,23 @@ public class MainActivity extends Activity {
 
 			mMapView.postInvalidate();
 		}
+		
+		public void addCircleOverlay (String test, double lat, double lon, int level)
+		{
+			GeoPoint gp = new GeoPoint(lat, lon);
+			
+			CircleOverlay co = new CircleOverlay(mActivity, gp, level);
+			
+			mMapView.getOverlayManager().add(co);
 
+			mMapView.postInvalidate();
+		}
+
+		public void addCircleOverlay (String test, int level)
+		{
+			addCircleOverlay (test, lastLocation.getLongitude(), lastLocation.getLatitude(), level);
+		}
+		
 		private LocationClient locationclient;
 		private LocationRequest locationrequest;
 
@@ -448,8 +474,45 @@ public class MainActivity extends Activity {
 			lastLocation = loc;
 		}
 
-		
+		class CircleOverlay extends SimpleLocationOverlay
+		{
+			private GeoPoint gp;
+			private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+			private int radius;
+			
+			public CircleOverlay(Context ctx, GeoPoint gp, int radius) {
+				super(ctx);
+				this.gp = gp;
+				this.radius = radius;
+
+				paint.setColor(Color.GREEN);
+				paint.setAlpha(50);
+			}
+
+			@Override
+			public void draw(Canvas canvas, MapView map, boolean shadow) {
+				Point mapCenterPoint = new Point();
+				 map.getProjection().toPixels(gp, mapCenterPoint);
+				 canvas.drawCircle(mapCenterPoint.x, mapCenterPoint.y, radius, this.paint);
+			}
+			
+		}
+
 
 	}
 
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+
+	    @Override
+	    public void onReceive(Context context, Intent intent) {
+	      Bundle bundle = intent.getExtras();
+	      if (bundle != null) {
+	    	
+	    	  int cellId = bundle.getInt("cid");
+	    	  int dbm = bundle.getInt("dbm")*2;
+	       
+	    	  mMapFragment.addCircleOverlay(cellId+"", mMapFragment.getLastLocation().getLatitude(), mMapFragment.getLastLocation().getLongitude(), dbm);
+	      }
+	    }
+	  };
 }

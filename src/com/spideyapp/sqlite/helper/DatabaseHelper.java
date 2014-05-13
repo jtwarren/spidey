@@ -23,7 +23,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	private static DatabaseHelper mInstance = null;
 
 	// Database Version
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
 	// Database Name
 	private static final String DATABASE_NAME = "scanInfo";
@@ -47,6 +47,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public static final String COLUMN_LAC = "lac";
 	public static final String COLUMN_MCC = "mcc";
 	public static final String COLUMN_MNC = "mnc";
+	public static final String COLUMN_DBM = "dbm";
+	
 
 	// SCAN_CELLS Table - column names
 	private static final String COLUMN_SCAN_ID = "scan_id";
@@ -58,13 +60,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ COLUMN_LOCATION + " TEXT, " + COLUMN_LATITUDE + " DECIMAL, "
 			+ COLUMN_LONGITUDE + " DECIMAL, " + COLUMN_CREATED_AT + " DATETIME"
 			+ ")";
-
+	
 	// Cell table create statement
 	private static final String CREATE_TABLE_CELL = "CREATE TABLE "
 			+ TABLE_CELLS + "(" + COLUMN_ID + " INTEGER PRIMARY KEY,"
 			+ COLUMN_CID + " INTEGER, " + COLUMN_LAC + " INTEGER, "
 			+ COLUMN_MCC + " INTEGER, " + COLUMN_MNC + " INTEGER, "
-			+ COLUMN_CREATED_AT + " DATETIME" + ")";
+			+ COLUMN_CREATED_AT + " DATETIME,"
+			+ COLUMN_DBM + " INTEGER, "
+			+ ")";
 
 	// scan_cell table create statement
 	private static final String CREATE_TABLE_SCAN_CELL = "CREATE TABLE "
@@ -94,12 +98,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// on upgrade drop older tables
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCANS);
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CELLS);
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCAN_CELL);
+	//	db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCANS);
+	//	db.execSQL("DROP TABLE IF EXISTS " + TABLE_CELLS);
+	//	db.execSQL("DROP TABLE IF EXISTS " + TABLE_SCAN_CELL);
 
 		// create new tables
-		onCreate(db);
+		//onCreate(db);
+		
+		if (newVersion == 2)
+		{
+			if (oldVersion == 1)
+				db.execSQL("ALTER TABLE " + TABLE_CELLS + " ADD COLUMN " + COLUMN_DBM + " INTEGER");
+		}
 	}
 
 	/**
@@ -248,6 +258,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(COLUMN_MCC, cell.getMCC());
 		values.put(COLUMN_MNC, cell.getMNC());
 		values.put(COLUMN_CREATED_AT, getDateTime());
+		values.put(COLUMN_DBM, cell.getDBM());
+		
 
 		// insert row
 		long cell_id = db.insert(TABLE_CELLS, null, values);
@@ -279,6 +291,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				cell.setLAC(c.getInt(c.getColumnIndex(COLUMN_LAC)));
 				cell.setMCC(c.getInt(c.getColumnIndex(COLUMN_MCC)));
 				cell.setMNC(c.getInt(c.getColumnIndex(COLUMN_MNC)));
+				cell.setDBM(c.getInt(c.getColumnIndex(COLUMN_DBM)));
 
 				cells.add(cell);
 			} while (c.moveToNext());
@@ -297,6 +310,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		values.put(COLUMN_LAC, cell.getLAC());
 		values.put(COLUMN_MCC, cell.getMCC());
 		values.put(COLUMN_MNC, cell.getMNC());
+		values.put(COLUMN_DBM, cell.getDBM());
 
 		// updating row
 		return db.update(TABLE_CELLS, values, COLUMN_ID + " = ?",
@@ -339,6 +353,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				cell.setLAC(c.getInt(c.getColumnIndex(COLUMN_LAC)));
 				cell.setMCC(c.getInt(c.getColumnIndex(COLUMN_MCC)));
 				cell.setMNC(c.getInt(c.getColumnIndex(COLUMN_MNC)));
+				cell.setDBM(c.getInt(c.getColumnIndex(COLUMN_DBM)));
+				
 
 				cells.add(cell);
 			} while (c.moveToNext());

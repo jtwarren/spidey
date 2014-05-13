@@ -7,17 +7,20 @@ public class CellInfo {
 	private int _lac;
 	private int _mcc;
 	private int _mnc;
+	private int _dbm;
+	
 	private String _created_at;
 
 	public CellInfo() {
 
 	}
 
-	public CellInfo(int cid, int lac, int mcc, int mnc) {
+	public CellInfo(int cid, int lac, int mcc, int mnc, int dbm) {
 		this._cid = cid;
 		this._lac = lac;
 		this._mcc = mcc;
 		this._mnc = mnc;
+		this._dbm = dbm;
 	}
 
 	// Setters
@@ -62,6 +65,14 @@ public class CellInfo {
 
 	public int getLAC() {
 		return this._lac;
+	}
+
+	public int getDBM() {
+		return _dbm;
+	}
+
+	public void setDBM(int _dbm) {
+		this._dbm = _dbm;
 	}
 
 	public int getMCC() {

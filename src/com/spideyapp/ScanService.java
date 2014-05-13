@@ -28,8 +28,8 @@ public class ScanService extends Service {
 	private DatabaseHelper db;
 
 	private String lastScanName;
-	private float lastScanLat;
-	private float lastScanLon;
+	private double lastScanLat;
+	private double lastScanLon;
 
 	public final static boolean DEBUG = true;
 	
@@ -38,8 +38,11 @@ public class ScanService extends Service {
 		this.telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
 		lastScanName = intent.getStringExtra("scanname");
-		lastScanLat = intent.getFloatExtra("lat", 0f);
-		lastScanLon = intent.getFloatExtra("lon", 0f);
+		lastScanLat = intent.getDoubleExtra("lat", 0.0);
+		lastScanLon = intent.getDoubleExtra("lon", 0.0);
+		
+		if (DEBUG == true)
+			startDummyScan();
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
 			startScan();
@@ -80,12 +83,16 @@ public class ScanService extends Service {
 					CellSignalStrengthGsm cellSignalStrengthGsm = cellInfoGsm
 							.getCellSignalStrength();
 
+					int dbmLevel = cellSignalStrengthGsm.getDbm();
+					
 					com.spideyapp.sqlite.model.CellInfo cell = new com.spideyapp.sqlite.model.CellInfo(
 							cellIdentity.getCid(), cellIdentity.getLac(),
-							cellIdentity.getMcc(), cellIdentity.getMnc());
+							cellIdentity.getMcc(), cellIdentity.getMnc(),dbmLevel);
 
 					db.createCell(cell, scan_id);
 
+					shareCellInfo (cell);
+					
 					logMessage("registered: " + cellInfoGsm.isRegistered()
 							+ ",cellId: " + cellIdentity.toString()
 							+ ",cellSignalStrength: "
@@ -95,6 +102,39 @@ public class ScanService extends Service {
 		}
 
 	}
+	
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
+	private void startDummyScan() {
+		db = DatabaseHelper.getInstance(getApplicationContext());
+		
+		logMessage("starting tower scan... ");
+		Scan scan = new Scan();
+
+		// TODO: Get location from user?
+		scan.setLocation(lastScanName);
+
+		// TODO: use actual GPS Coordinates
+		scan.setLatitude(lastScanLat);
+		scan.setLongitude(lastScanLon);
+
+		long scan_id = db.createScan(scan);
+
+		for (int i = 0; i < 5; i++)
+		{
+			com.spideyapp.sqlite.model.CellInfo cell = new com.spideyapp.sqlite.model.CellInfo(
+					i, 100,
+					200, 300, 10*i);
+
+			db.createCell(cell, scan_id);
+
+			shareCellInfo (cell);
+					
+					
+			
+		}
+
+	}
+
 
 	private void startSimpleScan() {
 		logMessage("starting tower scan (old stylie)... ");
@@ -136,4 +176,15 @@ public class ScanService extends Service {
 		// TODO for communication return IBinder implementation
 		return null;
 	}
+	
+	public static final String NOTIFICATION = "com.spideyapp.service.receiver";
+	
+	 private void shareCellInfo(com.spideyapp.sqlite.model.CellInfo cellInfo) {
+		    Intent intent = new Intent(NOTIFICATION);
+		    intent.putExtra("cid",cellInfo.getCID());
+		    intent.putExtra("dbm",cellInfo.getDBM());
+		    
+		  
+		    sendBroadcast(intent);
+		  }
 }

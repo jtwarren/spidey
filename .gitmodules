@@ -4,3 +4,6 @@
 [submodule "external/showcaseview"]
 	path = external/showcaseview
 	url = https://github.com/amlcurran/ShowcaseView.git
+[submodule "external/cardsui"]
+	path = external/cardsui
+	url = https://github.com/nadavfima/cardsui-for-android.git
