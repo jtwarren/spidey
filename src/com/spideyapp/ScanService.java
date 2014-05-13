@@ -28,16 +28,21 @@ public class ScanService extends Service {
 	private DatabaseHelper db;
 
 	private String lastScanName;
+	private float lastScanLat;
+	private float lastScanLon;
+
+	public final static boolean DEBUG = true;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		this.telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
 		lastScanName = intent.getStringExtra("scanname");
+		lastScanLat = intent.getFloatExtra("lat", 0f);
+		lastScanLon = intent.getFloatExtra("lon", 0f);
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
 			startScan();
-
 		else
 			startSimpleScan();
 
@@ -55,8 +60,8 @@ public class ScanService extends Service {
 		scan.setLocation(lastScanName);
 
 		// TODO: use actual GPS Coordinates
-		scan.setLatitude(42.360091);
-		scan.setLongitude(-71.09416);
+		scan.setLatitude(lastScanLat);
+		scan.setLongitude(lastScanLon);
 
 		long scan_id = db.createScan(scan);
 
@@ -119,7 +124,10 @@ public class ScanService extends Service {
 	}
 
 	private void logMessage(String msg) {
-		Log.d(TAG, msg);
+		
+		if (DEBUG)
+			Log.d(TAG, msg);
+		
 		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 	}
 

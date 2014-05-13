@@ -10,9 +10,13 @@
     <string name="delete_text">Delete</string>
     
     <string name="action_settings">Settings</string>
-    <string name="action_scan">Scan</string>
+    <string name="action_scan">New Scan</string>
     <string name="action_about">About</string>
-    <string name="action_scans">Scans</string>
+    <string name="action_scans">History</string>
+    <string name="activate_your_spidey_sense">Activate Your Spidey Sense</string>
+    <string name="spidey_is_an_app_">SPIDEY is an app that helps you identify whether someone is attempting to monitor your cell phone location or activity. The app allows you to scan and detect changes in the cell tower infrastructure around you.\n\n\nSELECT \'NEW SCAN\' TO BEGIN!</string>
+    <string name="scan_name">Scan Name</string>
+    <string name="please_enter_a_name_for_this_scan_your_location_place_etc_">Please enter a name for this scan (your location, place, etc)</string>
     
     
 </resources>
