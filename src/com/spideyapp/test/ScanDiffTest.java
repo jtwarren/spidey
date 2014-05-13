@@ -19,10 +19,10 @@ public class ScanDiffTest extends TestCase {
 		scan1 = new Scan();
 		scan2 = new Scan();
 		
-		cell1 = new CellInfo(1, 2, 3, 4);
-		cell2 = new CellInfo(2, 3, 4, 5);
-		cell3 = new CellInfo(3, 4, 5, 6);
-		cell4 = new CellInfo(4, 5, 6, 7);
+		cell1 = new CellInfo(1, 2, 3, 4, 0);
+		cell2 = new CellInfo(2, 3, 4, 5, 0);
+		cell3 = new CellInfo(3, 4, 5, 6, 0);
+		cell4 = new CellInfo(4, 5, 6, 7, 0);
 		
 		scan1.addCellInfo(cell1);
 		scan1.addCellInfo(cell2);

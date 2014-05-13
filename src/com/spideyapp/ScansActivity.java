@@ -31,6 +31,8 @@ public class ScansActivity extends ListActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        setTitle(R.string.history_of_spidey_scans);
+        
         mDb = DatabaseHelper.getInstance(this);
         List<Scan> scans = mDb.getAllScans();
         
@@ -55,6 +57,7 @@ public class ScansActivity extends ListActivity {
 	              startActivity(i);
 			}
         });
+        
          
     }
 	

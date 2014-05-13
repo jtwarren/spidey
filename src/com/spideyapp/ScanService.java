@@ -28,8 +28,8 @@ public class ScanService extends Service {
 	private DatabaseHelper db;
 
 	private String lastScanName;
-	private float lastScanLat;
-	private float lastScanLon;
+	private double lastScanLat;
+	private double lastScanLon;
 
 	public final static boolean DEBUG = true;
 	
@@ -38,8 +38,8 @@ public class ScanService extends Service {
 		this.telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
 
 		lastScanName = intent.getStringExtra("scanname");
-		lastScanLat = intent.getFloatExtra("lat", 0f);
-		lastScanLon = intent.getFloatExtra("lon", 0f);
+		lastScanLat = intent.getDoubleExtra("lat", 0.0);
+		lastScanLon = intent.getDoubleExtra("lon", 0.0);
 		
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
 			startScan();
@@ -80,9 +80,11 @@ public class ScanService extends Service {
 					CellSignalStrengthGsm cellSignalStrengthGsm = cellInfoGsm
 							.getCellSignalStrength();
 
+					int dbmLevel = cellSignalStrengthGsm.getDbm();
+					
 					com.spideyapp.sqlite.model.CellInfo cell = new com.spideyapp.sqlite.model.CellInfo(
 							cellIdentity.getCid(), cellIdentity.getLac(),
-							cellIdentity.getMcc(), cellIdentity.getMnc());
+							cellIdentity.getMcc(), cellIdentity.getMnc(),dbmLevel);
 
 					db.createCell(cell, scan_id);
 
