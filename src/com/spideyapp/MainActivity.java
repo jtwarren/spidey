@@ -1,17 +1,22 @@
 package com.spideyapp;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.SimpleLocationOverlay;
 
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Movie;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,7 +28,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -35,11 +39,12 @@ import com.espian.showcaseview.targets.ViewTarget;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
-import com.google.android.gms.internal.c;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.spideyapp.cloud.OpenCellIdLookup;
+import com.spideyapp.sqlite.model.CellInfo;
+import com.spideyapp.sqlite.model.Scan;
 
 public class MainActivity extends Activity {
 
@@ -60,14 +65,72 @@ public class MainActivity extends Activity {
 					.add(R.id.container, mMapFragment).commit();
 
 		}
+
+		//setupTabs();
 		
+		showWelcome();
+	}
+	
+	/**
+	private void setupTabs ()
+	{
+	
+		ActionBar actionBar = this.getActionBar();
+		
+	    // Specify that tabs should be displayed in the action bar.
+	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+	    // Create a tab listener that is called when the user changes tabs.
+	    ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+
+			@Override
+			public void onTabReselected(Tab tab,
+					android.app.FragmentTransaction ft) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onTabSelected(Tab tab,
+					android.app.FragmentTransaction ft) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onTabUnselected(Tab tab,
+					android.app.FragmentTransaction ft) {
+				// TODO Auto-generated method stub
+				
+			}
+	    };
+
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setText("Scan Map")
+                        .setTabListener(tabListener));
+        
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setText("History")
+                        .setTabListener(tabListener));
+        
+        actionBar.addTab(
+                actionBar.newTab()
+                        .setText("About Spidey")
+                        .setTabListener(tabListener));
+    
+	}*/
+	
+	private void showWelcome ()
+	{
 
         ShowcaseView.ConfigOptions co = new ShowcaseView.ConfigOptions();        	
 		co.shotType = ShowcaseView.TYPE_NO_LIMIT;
 		co.hideOnClickOutside = true;
 		
         ViewTarget target = new ViewTarget(R.id.container, this);
-        final ShowcaseView sv = ShowcaseView.insertShowcaseView(target, this, "Activate Your Spidey Sense","SPIDEY is an app that helps you identify whether someone is attempting to monitor your cell phone location or activity. The app allows you to scan and detect changes in the cell tower infrastructure around you.", co);
+        final ShowcaseView sv = ShowcaseView.insertShowcaseView(target, this, getString(R.string.activate_your_spidey_sense),getString(R.string.spidey_is_an_app_), co);
         sv.setHardwareAccelerated(true);
         
         // set black background
@@ -175,19 +238,26 @@ public class MainActivity extends Activity {
 		final EditText input = new EditText(this);
 		
 		new AlertDialog.Builder(this)
-	    .setTitle("Scan Name")
-	    .setMessage("Please enter a name for this scan (your location, place, etc)")
+	    .setTitle(R.string.scan_name)
+	    .setMessage(R.string.please_enter_a_name_for_this_scan_your_location_place_etc_)
 	    .setView(input)
-	    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+	    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int whichButton) {
 	            Editable value = input.getText(); 
 	            
 	            Intent intent = new Intent(MainActivity.this, ScanService.class); 
 	            intent.putExtra("scanname", value.toString());
+	            
+	            Location loc = mMapFragment.getLastLocation();
+	            if (loc != null)
+	            {
+	            	intent.putExtra("lat",loc.getLatitude());
+	            	intent.putExtra("lon",loc.getLongitude());
+	            }
 	    		//start the background scan
 	    		startService(intent);
 	        }
-	    }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+	    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int whichButton) {
 	            // Do nothing.
 	        }
@@ -196,8 +266,10 @@ public class MainActivity extends Activity {
 
 	}
 
-	private void doCellLookup() {
-		new CellLookupOperation().execute("");
+	private void doCellLookup(Scan scan) {
+		
+		CellInfo cInfo = scan.getCellInfos().get(0);		
+		new CellLookupOperation().execute(cInfo.getMCC()+"",cInfo.getMNC()+"",cInfo.getLAC()+"",cInfo.getCID()+"");
 
 	}
 
@@ -243,10 +315,16 @@ public class MainActivity extends Activity {
 		Activity mActivity;
 		LinearLayout mViewResults;
 		View mRootView;
-
+		Location lastLocation;
+		
 		public MapFragment() {
 		}
 
+		public Location getLastLocation ()
+		{
+			return lastLocation;
+		}
+		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
@@ -286,17 +364,9 @@ public class MainActivity extends Activity {
 			mViewResults.removeView(view);
 		}
 
-		
+		/**
 		public void addResult(String text) {
-			/**
-			 * <Button android:text="Scan Result 1" android:textSize="24sp"
-			 * android:textColor="#000000"
-			 * 
-			 * android:background="#cc999999"
-			 * android:layout_height="wrap_content"
-			 * android:layout_width="match_parent" android:gravity="center"
-			 * android:layout_margin="6dp"
-			 */
+			
 			Button btn = new Button(mActivity);
 			btn.setText(text);
 			btn.setTextSize(24);
@@ -308,8 +378,12 @@ public class MainActivity extends Activity {
 			lp.setMargins(6, 6, 6, 6);
 			mViewResults.addView(btn, lp);
 		}
+		*/
 
 		protected void setupMap(String lat, String lon, int zoomLevel, View view) {
+			
+			GeoPoint gp = GeoPoint.fromDoubleString(lat + ',' + lon, ',');
+			
 			mMapView = (MapView) view.findViewById(R.id.mapview);
 			mMapView.getOverlayManager().getTilesOverlay()
 					.setOvershootTileCache(300);
@@ -320,8 +394,14 @@ public class MainActivity extends Activity {
 
 			mMapView.getController().setZoom(zoomLevel);
 			mMapView.getController().setCenter(
-					GeoPoint.fromDoubleString(lat + ',' + lon, ','));
+					gp);
+			
+			SimpleLocationOverlay so = new SimpleLocationOverlay(mActivity);
+			so.setLocation(gp);
+			
+			mMapView.getOverlayManager().add(so);
 
+			mMapView.postInvalidate();
 		}
 
 		private LocationClient locationclient;
@@ -365,6 +445,7 @@ public class MainActivity extends Activity {
 				setupMap(loc.getLatitude() + "", loc.getLongitude() + "",
 						DEFAULT_MAP_ZOOM, mRootView);
 
+			lastLocation = loc;
 		}
 
 		
