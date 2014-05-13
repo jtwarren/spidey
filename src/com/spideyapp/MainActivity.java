@@ -21,16 +21,21 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 
-import com.spideyapp.R;
+import com.espian.showcaseview.OnShowcaseEventListener;
+import com.espian.showcaseview.ShowcaseView;
+import com.espian.showcaseview.targets.ViewTarget;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient.ConnectionCallbacks;
 import com.google.android.gms.common.GooglePlayServicesClient.OnConnectionFailedListener;
+import com.google.android.gms.internal.c;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
@@ -55,6 +60,51 @@ public class MainActivity extends Activity {
 					.add(R.id.container, mMapFragment).commit();
 
 		}
+		
+
+        ShowcaseView.ConfigOptions co = new ShowcaseView.ConfigOptions();        	
+		co.shotType = ShowcaseView.TYPE_NO_LIMIT;
+		co.hideOnClickOutside = true;
+		
+        ViewTarget target = new ViewTarget(R.id.container, this);
+        final ShowcaseView sv = ShowcaseView.insertShowcaseView(target, this, "Activate Your Spidey Sense","SPIDEY is an app that helps you identify whether someone is attempting to monitor your cell phone location or activity. The app allows you to scan and detect changes in the cell tower infrastructure around you.", co);
+        sv.setHardwareAccelerated(true);
+        
+        // set black background
+        sv.setBackgroundColor(Color.BLACK);
+        // make background a bit transparent
+        sv.setAlpha(0.75f);
+        
+        sv.setOnShowcaseEventListener(new OnShowcaseEventListener ()
+        {
+
+			@Override
+			public void onShowcaseViewHide(ShowcaseView showcaseView) {
+				
+			}
+
+			@Override
+			public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+			
+				
+			}
+
+			@Override
+			public void onShowcaseViewShow(ShowcaseView showcaseView) {
+				
+			}
+        	
+        });
+        
+        sv.setOnClickListener(new OnClickListener ()
+        {
+
+			@Override
+			public void onClick(View v) {
+				sv.hide();
+			}
+        	
+        });
 		
 	}
 
@@ -99,6 +149,25 @@ public class MainActivity extends Activity {
 		startActivity(intent);
 	}
 
+	private void showDialog (String msg)
+	{
+
+		final TextView tv = new TextView(this);
+		tv.setText("Welcome to Spidey! Welcome to Spidey! Welcome to Spidey!Welcome to Spidey!");
+		
+		mMapFragment.addView(tv, 36);
+		
+		tv.setOnClickListener(new OnClickListener()
+		{
+
+			@Override
+			public void onClick(View v) {
+				mMapFragment.removeView(tv);
+			}
+			
+		});
+	}
+	
 	private void runScan() {
 
 
@@ -193,6 +262,31 @@ public class MainActivity extends Activity {
 			return mRootView;
 		}
 
+		public void addView(View view, int margin) {
+			/**
+			 * <Button android:text="Scan Result 1" android:textSize="24sp"
+			 * android:textColor="#000000"
+			 * 
+			 * android:background="#cc999999"
+			 * android:layout_height="wrap_content"
+			 * android:layout_width="match_parent" android:gravity="center"
+			 * android:layout_margin="6dp"
+			 */
+			
+			LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT,
+					LayoutParams.WRAP_CONTENT);
+			lp.setMargins(margin,margin,margin,margin);
+			mViewResults.addView(view, lp);
+			
+			
+		}
+		
+		public void removeView (View view)
+		{
+			mViewResults.removeView(view);
+		}
+
+		
 		public void addResult(String text) {
 			/**
 			 * <Button android:text="Scan Result 1" android:textSize="24sp"
@@ -242,8 +336,8 @@ public class MainActivity extends Activity {
 
 					locationrequest = LocationRequest.create();
 					locationrequest.setInterval(100);
-					locationclient.requestLocationUpdates(locationrequest,
-							(LocationListener) MapFragment.this);
+
+					locationclient.requestLocationUpdates(locationrequest, (LocationListener) MapFragment.this);
 				}
 
 				@Override
@@ -272,6 +366,8 @@ public class MainActivity extends Activity {
 						DEFAULT_MAP_ZOOM, mRootView);
 
 		}
+
+		
 
 	}
 
