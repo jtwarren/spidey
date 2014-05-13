@@ -414,11 +414,11 @@ public class MainActivity extends Activity {
 			mMapView.postInvalidate();
 		}
 		
-		public void addCircleOverlay (String test, double lat, double lon, int level)
+		public void addCircleOverlay (String label, double lat, double lon, int level)
 		{
 			GeoPoint gp = new GeoPoint(lat, lon);
 			
-			CircleOverlay co = new CircleOverlay(mActivity, gp, level);
+			CircleOverlay co = new CircleOverlay(mActivity, label, gp, level);
 			
 			mMapView.getOverlayManager().add(co);
 
@@ -479,21 +479,37 @@ public class MainActivity extends Activity {
 			private GeoPoint gp;
 			private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 			private int radius;
+			private String label;
 			
-			public CircleOverlay(Context ctx, GeoPoint gp, int radius) {
+			public CircleOverlay(Context ctx, String label, GeoPoint gp, int radius) {
 				super(ctx);
 				this.gp = gp;
 				this.radius = radius;
-
-				paint.setColor(Color.GREEN);
-				paint.setAlpha(50);
+				this.label = label;
+				
+				
+				paint.setAlpha(80);
+				
+				
+				
 			}
 
 			@Override
 			public void draw(Canvas canvas, MapView map, boolean shadow) {
 				Point mapCenterPoint = new Point();
 				 map.getProjection().toPixels(gp, mapCenterPoint);
-				 canvas.drawCircle(mapCenterPoint.x, mapCenterPoint.y, radius, this.paint);
+				
+				 paint.setStyle(Paint.Style.STROKE);
+				 paint.setColor(Color.RED);
+				 paint.setStrokeWidth(5);
+				 canvas.drawCircle(mapCenterPoint.x, mapCenterPoint.y, radius, paint);
+				 
+				 paint.setStyle(Paint.Style.FILL_AND_STROKE);
+				 paint.setColor(Color.DKGRAY);
+				 paint.setStrokeWidth(2);
+				 paint.setTextSize(40);
+				 canvas.drawText(label, mapCenterPoint.x, mapCenterPoint.y+radius, paint);
+				 
 			}
 			
 		}
@@ -509,7 +525,7 @@ public class MainActivity extends Activity {
 	      if (bundle != null) {
 	    	
 	    	  int cellId = bundle.getInt("cid");
-	    	  int dbm = bundle.getInt("dbm")*2;
+	    	  int dbm = bundle.getInt("dbm")*4;
 	       
 	    	  mMapFragment.addCircleOverlay(cellId+"", mMapFragment.getLastLocation().getLatitude(), mMapFragment.getLastLocation().getLongitude(), dbm);
 	      }
