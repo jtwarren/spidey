@@ -2,9 +2,11 @@ package com.spideyapp;
 
 import java.io.IOException;
 
+import net.hockeyapp.android.CrashManager;
+import net.hockeyapp.android.UpdateManager;
+
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.util.TileSystem;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.SimpleLocationOverlay;
 
@@ -162,6 +164,9 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		 registerReceiver(receiver, new IntentFilter(ScanService.NOTIFICATION));
+
+		 checkForCrashes();
+		 checkForUpdates();
 	}
 	
 	@Override
@@ -170,6 +175,17 @@ public class MainActivity extends Activity {
 	    unregisterReceiver(receiver);
 	  }
 
+
+	/**HockeyAPp**/
+	  private void checkForCrashes() {
+	    CrashManager.register(this, "86494125c282a86b3f7f30ac76bd3129");
+	  }
+
+	  private void checkForUpdates() {
+	    // Remove this for store builds!
+	    UpdateManager.register(this, "86494125c282a86b3f7f30ac76bd3129");
+	  }
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
