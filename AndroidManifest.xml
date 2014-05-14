@@ -35,14 +35,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.spideyapp.DatabaseActivity"
-            android:label="@string/app_name" >
-        </activity>
-        <activity
             android:name="com.spideyapp.AboutActivity" >
         </activity>
         <activity
-            android:name="com.spideyapp.ScansActivity" >
+            android:name="com.spideyapp.HistoryActivity" >
         </activity>
                 <activity
             android:name="com.spideyapp.ScanDetailsActivity" >
