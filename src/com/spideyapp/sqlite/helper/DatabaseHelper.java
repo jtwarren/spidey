@@ -138,9 +138,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		String selectQuery = "SELECT  * FROM " + TABLE_SCANS + " WHERE "
 				+ COLUMN_ID + " = " + scan_id;
-
-		Log.d(TAG, selectQuery);
-
+		
 		Cursor c = db.rawQuery(selectQuery, null);
 
 		if (c != null && c.isBeforeFirst())
@@ -169,8 +167,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 	public List<Scan> getAllScans() {
 		List<Scan> scans = new ArrayList<Scan>();
 		String selectQuery = "SELECT  * FROM " + TABLE_SCANS;
-
-		Log.d(TAG, selectQuery);
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
@@ -287,7 +283,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 		List<CellInfo> cells = new ArrayList<CellInfo>();
 		String selectQuery = "SELECT  * FROM " + TABLE_CELLS;
 
-		Log.d(TAG, selectQuery);
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);
@@ -348,8 +343,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				+ COLUMN_ID + " = '" + scan_id + "'" + " AND ts." + COLUMN_ID
 				+ " = " + "tt." + COLUMN_SCAN_ID + " AND tc." + COLUMN_ID + " = "
 				+ "tt." + COLUMN_CELL_ID;
-
-		Log.d(TAG, selectQuery);
 
 		SQLiteDatabase db = this.getReadableDatabase();
 		Cursor c = db.rawQuery(selectQuery, null);

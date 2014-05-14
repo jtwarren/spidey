@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.spideyapp.MainActivity" >
+
+    <item
+        android:id="@+id/action_map"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="@string/action_map"/>
+    
+
+</menu>
