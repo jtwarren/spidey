@@ -117,4 +117,18 @@ public class CellInfo {
 			return false;
 		return true;
 	}
+	
+	public String toString ()
+	{
+		StringBuffer result = new StringBuffer();
+		
+		result.append("Cell Identifier (CID): " + _cid).append("\n");
+		result.append("Location Code (LAC): " + _lac).append("\n");
+		result.append("Country Code (MCC): " + _mcc).append("\n");
+		result.append("Network Code (MNC): " + _mnc).append("\n");
+		result.append("Signal Strength (DBM): " + _dbm).append("\n");
+		
+		
+		return result.toString();
+	}
 }

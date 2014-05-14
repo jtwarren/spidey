@@ -414,6 +414,8 @@ public class MainActivity extends Activity {
 			mMapView.postInvalidate();
 		}
 		
+		private int circleOverlayCount = 0;
+		
 		public void addCircleOverlay (String label, double lat, double lon, int level)
 		{
 			GeoPoint gp = new GeoPoint(lat, lon);
@@ -487,10 +489,7 @@ public class MainActivity extends Activity {
 				this.radius = radius;
 				this.label = label;
 				
-				
 				paint.setAlpha(80);
-				
-				
 				
 			}
 

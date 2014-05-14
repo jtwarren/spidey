@@ -33,25 +33,33 @@ public class ScanDetailsActivity extends Activity{
         long scan_id = i.getLongExtra("scan_id", -1);
         
         Scan scan = mDb.getScan(scan_id);
-        setTitle(scan.getId() + ": " + scan.getLocation() + " " + scan.getCreatedAt());
         
-        List<CellInfo> cells = mDb.getAllCellsByScanId(scan.getId());
-        
-        for (CellInfo cInfo : cells)
+        if (scan != null)
         {
-        	String cTitle = cInfo.getCreatedAt();
-        	String cContent = "CellID: " + cInfo.getCID();
-        	
-	    	mCardView
-			.addCard(new ScanDetailCard(
-					cTitle,
-					cContent,
-					"#00ff00", "#777777", false, false));
+	        setTitle(scan.getId() + ": " + scan.getLocation() + " " + scan.getCreatedAt());
+	        
+	        List<CellInfo> cells = mDb.getAllCellsByScanId(scan.getId());
+	        
+	        for (CellInfo cInfo : cells)
+	        {
+	        	String cTitle = "Cell Identifier (CID) " + cInfo.getCID();
+	        	String cContent = cInfo.toString();
+	        	
+		    	mCardView
+				.addCard(new ScanDetailCard(
+						cTitle,
+						cContent,
+						"#00ff00", "#333333", false, false));
+	        }
+	        
+	
+			// draw cards
+			mCardView.refresh();
         }
-        
-
-		// draw cards
-		mCardView.refresh();
+        else
+        {
+        	finish();
+        }
          
     }
     
