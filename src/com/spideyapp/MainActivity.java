@@ -20,8 +20,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -242,36 +245,62 @@ public class MainActivity extends Activity {
 	
 	private void runScan() {
 
+		if (this.isProperNetworkState())
+		{
 
-		// Set an EditText view to get user input 
-		final EditText input = new EditText(this);
-		
-		new AlertDialog.Builder(this)
-	    .setTitle(R.string.scan_name)
-	    .setMessage(R.string.please_enter_a_name_for_this_scan_your_location_place_etc_)
-	    .setView(input)
-	    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int whichButton) {
-	            Editable value = input.getText(); 
-	            
-	            Intent intent = new Intent(MainActivity.this, ScanService.class); 
-	            intent.putExtra("scanname", value.toString());
-	            
-	            Location loc = mMapFragment.getLastLocation();
-	            if (loc != null)
-	            {
-	            	intent.putExtra("lat",loc.getLatitude());
-	            	intent.putExtra("lon",loc.getLongitude());
-	            }
-	    		//start the background scan
-	    		startService(intent);
-	    		
-	        }
-	    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int whichButton) {
-	            // Do nothing.
-	        }
-	    }).show();
+			// Set an EditText view to get user input 
+			final EditText input = new EditText(this);
+			
+			new AlertDialog.Builder(this)
+		    .setTitle(R.string.scan_name)
+		    .setMessage(R.string.please_enter_a_name_for_this_scan_your_location_place_etc_)
+		    .setView(input)
+		    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int whichButton) {
+		        	
+		            Editable value = input.getText(); 
+		            
+		            Intent intent = new Intent(MainActivity.this, ScanService.class); 
+		            intent.putExtra("scanname", value.toString());
+		            
+		            Location loc = mMapFragment.getLastLocation();
+		            if (loc != null)
+		            {
+		            	intent.putExtra("lat",loc.getLatitude());
+		            	intent.putExtra("lon",loc.getLongitude());
+		            }
+		    		//start the background scan
+		    		startService(intent);
+		    		
+		        }
+		    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int whichButton) {
+		            // Do nothing.
+		        }
+		    }).show();
+		}
+		else
+		{
+			
+			new AlertDialog.Builder(this)
+		    .setTitle("Invalid Network Settings")
+		    .setMessage("Please disable your wifi and uncheck 'Data enabled' and set to 'Preferred network type' to 2G on Mobile Network settings screen (click OK to open now)")		    
+		    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int whichButton) {
+		        	Intent intent = new Intent();
+		        	intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		        	intent.setAction(android.provider.Settings.ACTION_DATA_ROAMING_SETTINGS);
+		        	startActivity(intent);
+		    		
+		        }
+		    }).setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int whichButton) {
+		            // Do nothing.
+		        }
+		    }).show();
+
+	      
+		}
 		
 
 	}
@@ -524,10 +553,74 @@ public class MainActivity extends Activity {
 	      if (bundle != null) {
 	    	
 	    	  int cellId = bundle.getInt("cid");
-	    	  int dbm = bundle.getInt("dbm")*4;
+	    	  int dbm = bundle.getInt("dbm")*20;
 	       
 	    	  mMapFragment.addCircleOverlay(cellId+"", mMapFragment.getLastLocation().getLatitude(), mMapFragment.getLastLocation().getLongitude(), dbm);
 	      }
 	    }
 	  };
+	  
+	  //we want 3G/LTE off
+	  private boolean isProperNetworkState ()
+	  {
+		  ConnectivityManager mgr = (ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);
+
+	      //boolean is3G = mgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnectedOrConnecting();
+	      
+		  NetworkInfo[] networkInfos = mgr.getAllNetworkInfo();
+		  
+		  for (NetworkInfo netInfo : networkInfos)
+		  {
+		      if(netInfo.getType()==ConnectivityManager.TYPE_MOBILE)
+		      {
+		    	  int subType = netInfo.getSubtype();
+		    	  
+		    	  switch(subType){
+		          case TelephonyManager.NETWORK_TYPE_1xRTT:
+		              return false; // ~ 50-100 kbps
+		          case TelephonyManager.NETWORK_TYPE_CDMA:
+		              return false; // ~ 14-64 kbps
+		          case TelephonyManager.NETWORK_TYPE_EDGE:
+		              return true; // ~ 50-100 kbps
+		          case TelephonyManager.NETWORK_TYPE_EVDO_0:
+		              return false; // ~ 400-1000 kbps
+		          case TelephonyManager.NETWORK_TYPE_EVDO_A:
+		              return false; // ~ 600-1400 kbps
+		          case TelephonyManager.NETWORK_TYPE_GPRS:
+		              return true; // ~ 100 kbps
+		          case TelephonyManager.NETWORK_TYPE_HSDPA:
+		              return false; // ~ 2-14 Mbps
+		          case TelephonyManager.NETWORK_TYPE_HSPA:
+		              return false; // ~ 700-1700 kbps
+		          case TelephonyManager.NETWORK_TYPE_HSUPA:
+		              return false; // ~ 1-23 Mbps
+		          case TelephonyManager.NETWORK_TYPE_UMTS:
+		              return false; // ~ 400-7000 kbps
+		          /*
+		           * Above API level 7, make sure to set android:targetSdkVersion 
+		           * to appropriate level to use these
+		           */
+		          case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11 
+		              return false; // ~ 1-2 Mbps
+		          case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9
+		              return false; // ~ 5 Mbps
+		          case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13
+		              return false; // ~ 10-20 Mbps
+		          case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
+		              return false; // ~25 kbps 
+		          case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
+		              return false; // ~ 10+ Mbps
+		          // Unknown
+		          case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+		          default:
+		              return true;
+		          }
+		      }
+		  }
+	  
+	      return true;
+	  }
+	  
+	  
+	  
 }
