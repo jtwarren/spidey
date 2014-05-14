@@ -50,8 +50,7 @@ public class ScanService extends Service {
 			startSimpleScan();
 			*/
 		
-		startDummyScan();
-		//startLegacyScan();
+		startLegacyScan();
 
 		return Service.START_NOT_STICKY;
 	}
