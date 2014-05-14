@@ -45,12 +45,7 @@ public class ScansActivity extends ListActivity {
         
         mDb = DatabaseHelper.getInstance(this);
         List<Scan> scans = mDb.getAllScans();
-        
-        for (Scan scan : scans) {
-        	Log.d(TAG, "" + scan.getId());
-        }
 
-        
         mListView = getListView();
         
         //add on long click listener to start action mode
@@ -170,7 +165,7 @@ public class ScansActivity extends ListActivity {
 	        Scan scan = scans.get(position);
 	        
 	        TextView text = (TextView) vi.findViewById(R.id.row1);	        
-	        String row1 = scan.getLocation();	        
+	        String row1 = scan.getLocation() + " (" + scan.getCellInfos().size() + " cell towers found)";	        
 	        text.setText(row1);
 	        
 	        text = (TextView) vi.findViewById(R.id.row2);	        

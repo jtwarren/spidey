@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
+import org.osmdroid.util.TileSystem;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.SimpleLocationOverlay;
 
@@ -24,6 +25,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.util.Log;
@@ -36,7 +38,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.TextView;
 
 import com.espian.showcaseview.OnShowcaseEventListener;
 import com.espian.showcaseview.ShowcaseView;
@@ -48,6 +49,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.spideyapp.cloud.OpenCellIdLookup;
+import com.spideyapp.sqlite.helper.DatabaseHelper;
 import com.spideyapp.sqlite.model.CellInfo;
 import com.spideyapp.sqlite.model.Scan;
 
@@ -72,60 +74,40 @@ public class MainActivity extends Activity {
 		}
 
 		//setupTabs();
+		Intent i = getIntent();
 		
-		showWelcome();
+		if (i.hasExtra("scan_id"))
+		{
+			final long scan_id = i.getLongExtra("scan_id", -1);
+			final Handler handler = new Handler();
+			handler.postDelayed(new Runnable() {
+			    @Override
+			    public void run() {
+			        // Do something after 5s = 5000ms
+			    	showScanMap(scan_id);
+			    }
+			}, 2000);
+			
+			
+		}
+		else
+			showWelcome();
 	}
 	
-	/**
-	private void setupTabs ()
+	private void showScanMap (long scan_id)
 	{
-	
-		ActionBar actionBar = this.getActionBar();
 		
-	    // Specify that tabs should be displayed in the action bar.
-	    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-	    // Create a tab listener that is called when the user changes tabs.
-	    ActionBar.TabListener tabListener = new ActionBar.TabListener() {
-
-			@Override
-			public void onTabReselected(Tab tab,
-					android.app.FragmentTransaction ft) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onTabSelected(Tab tab,
-					android.app.FragmentTransaction ft) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onTabUnselected(Tab tab,
-					android.app.FragmentTransaction ft) {
-				// TODO Auto-generated method stub
-				
-			}
-	    };
-
-        actionBar.addTab(
-                actionBar.newTab()
-                        .setText("Scan Map")
-                        .setTabListener(tabListener));
         
-        actionBar.addTab(
-                actionBar.newTab()
-                        .setText("History")
-                        .setTabListener(tabListener));
+        Scan scan = DatabaseHelper.getInstance(this).getScan(scan_id);
         
-        actionBar.addTab(
-                actionBar.newTab()
-                        .setText("About Spidey")
-                        .setTabListener(tabListener));
-    
-	}*/
+        mMapFragment.setLocation(scan.getLatitude()+"", scan.getLongitude()+"");
+        
+        for (CellInfo ci : scan.getCellInfos())
+        {
+        	mMapFragment.addCircleOverlay(ci.getCID()+"", scan.getLatitude(),scan.getLongitude(),ci.getDBM());
+        }
+        
+	}
 	
 	private void showWelcome ()
 	{
@@ -201,9 +183,8 @@ public class MainActivity extends Activity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		} else if (id == R.id.action_scan) {
+		
+		if (id == R.id.action_scan) {
 			runScan();
 		} else if (id == R.id.action_about) {
 			showAbout();
@@ -224,30 +205,15 @@ public class MainActivity extends Activity {
 		startActivity(intent);
 	}
 
-	private void showDialog (String msg)
-	{
-
-		final TextView tv = new TextView(this);
-		tv.setText("Welcome to Spidey! Welcome to Spidey! Welcome to Spidey!Welcome to Spidey!");
-		
-		mMapFragment.addView(tv, 36);
-		
-		tv.setOnClickListener(new OnClickListener()
-		{
-
-			@Override
-			public void onClick(View v) {
-				mMapFragment.removeView(tv);
-			}
-			
-		});
-	}
 	
 	private void runScan() {
 
 		if (this.isProperNetworkState())
 		{
 
+			mMapFragment.startLocationLookup();
+			mMapFragment.clearOverlays();
+			
 			// Set an EditText view to get user input 
 			final EditText input = new EditText(this);
 			
@@ -283,8 +249,8 @@ public class MainActivity extends Activity {
 		{
 			
 			new AlertDialog.Builder(this)
-		    .setTitle("Invalid Network Settings")
-		    .setMessage("Please disable your wifi and uncheck 'Data enabled' and set to 'Preferred network type' to 2G on Mobile Network settings screen (click OK to open now)")		    
+		    .setTitle(R.string.required_mobile_settings)
+		    .setMessage(R.string.please_uncheck_data_enabled_and_set_preferred_network_type_to_2g_on_the_mobile_network_settings_screen_click_ok_to_open_it_now_)		    
 		    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
 		        public void onClick(DialogInterface dialog, int whichButton) {
 		        	Intent intent = new Intent();
@@ -355,6 +321,13 @@ public class MainActivity extends Activity {
 		LinearLayout mViewResults;
 		View mRootView;
 		Location lastLocation;
+		SimpleLocationOverlay mMapMan;
+		
+		private LocationClient locationclient;
+		private LocationRequest locationrequest;
+		
+		private String defaultLatitude = "0";
+		private String defaultLongitude = "0";
 		
 		public MapFragment() {
 		}
@@ -374,7 +347,9 @@ public class MainActivity extends Activity {
 
 			mActivity = this.getActivity();
 
-			doLocation();
+			setupMap(defaultLatitude,defaultLongitude,DEFAULT_MAP_ZOOM, mRootView);
+			
+			startLocationLookup();
 
 			return mRootView;
 		}
@@ -402,48 +377,33 @@ public class MainActivity extends Activity {
 		{
 			mViewResults.removeView(view);
 		}
-
-		/**
-		public void addResult(String text) {
-			
-			Button btn = new Button(mActivity);
-			btn.setText(text);
-			btn.setTextSize(24);
-			btn.setTextColor(Color.BLACK);
-			btn.setPadding(3, 3, 3, 3);
-			btn.setBackgroundColor(Color.parseColor("#CC999999"));
-			LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT,
-					LayoutParams.WRAP_CONTENT);
-			lp.setMargins(6, 6, 6, 6);
-			mViewResults.addView(btn, lp);
-		}
-		*/
-
+		
 		protected void setupMap(String lat, String lon, int zoomLevel, View view) {
 			
 			GeoPoint gp = GeoPoint.fromDoubleString(lat + ',' + lon, ',');
 			
-			mMapView = (MapView) view.findViewById(R.id.mapview);
-			mMapView.getOverlayManager().getTilesOverlay()
-					.setOvershootTileCache(300);
-
-			mMapView.setTileSource(TileSourceFactory.MAPNIK);
-			mMapView.setBuiltInZoomControls(true);
-			mMapView.setMultiTouchControls(true);
-
+			if (mMapView == null)
+			{
+				mMapView = (MapView) view.findViewById(R.id.mapview);
+				mMapView.getOverlayManager().getTilesOverlay()
+						.setOvershootTileCache(300);
+	
+				mMapView.setTileSource(TileSourceFactory.MAPNIK);
+				mMapView.setBuiltInZoomControls(true);
+				mMapView.setMultiTouchControls(true);
+			}
+			
 			mMapView.getController().setZoom(zoomLevel);
 			mMapView.getController().setCenter(
 					gp);
 			
-			SimpleLocationOverlay so = new SimpleLocationOverlay(mActivity);
-			so.setLocation(gp);
+			mMapMan = new SimpleLocationOverlay(mActivity);
+			mMapMan.setLocation(gp);
 			
-			mMapView.getOverlayManager().add(so);
+			mMapView.getOverlayManager().add(mMapMan);
 
 			mMapView.postInvalidate();
 		}
-		
-		private int circleOverlayCount = 0;
 		
 		public void addCircleOverlay (String label, double lat, double lon, int level)
 		{
@@ -455,53 +415,76 @@ public class MainActivity extends Activity {
 
 			mMapView.postInvalidate();
 		}
+		
+		public void clearOverlays ()
+		{
+			mMapView.getOverlayManager().clear();
+			mMapView.getOverlayManager().add(mMapMan);
+		}
 
 		public void addCircleOverlay (String test, int level)
 		{
 			addCircleOverlay (test, lastLocation.getLongitude(), lastLocation.getLatitude(), level);
 		}
 		
-		private LocationClient locationclient;
-		private LocationRequest locationrequest;
-
-		private void doLocation() {
-			locationclient = new LocationClient(this.getActivity()
-					.getApplicationContext(), new ConnectionCallbacks() {
-
-				@Override
-				public void onConnected(Bundle arg0) {
-
-					locationrequest = LocationRequest.create();
-					locationrequest.setInterval(100);
-
-					locationclient.requestLocationUpdates(locationrequest, (LocationListener) MapFragment.this);
-				}
-
-				@Override
-				public void onDisconnected() {
-
-				}
-			}, new OnConnectionFailedListener() {
-
-				@Override
-				public void onConnectionFailed(ConnectionResult arg0) {
-
-					Log.d(TAG,
-							"Could not connect to Google Play Services (location provider)");
-
-				}
-			});
-			locationclient.connect();
+		public void setLocation (String latitude, String longitude)		
+		{
+			
+			GeoPoint gp = GeoPoint.fromDoubleString(latitude + ',' + longitude, ',');
+			
+			if (mMapView != null)
+			{
+				mMapView.getController().setCenter(gp);
+				mMapMan.setLocation(gp);
+			}
+			else
+			{
+				defaultLatitude = latitude;
+				defaultLongitude = longitude;
+			}
+		}
+		
+		public void startLocationLookup() {
+			
+			if (locationclient == null)
+			{
+				locationclient = new LocationClient(this.getActivity()
+						.getApplicationContext(), new ConnectionCallbacks() {
+	
+					@Override
+					public void onConnected(Bundle arg0) {
+	
+						locationrequest = LocationRequest.create();
+						locationrequest.setInterval(100);
+	
+						locationclient.requestLocationUpdates(locationrequest, (LocationListener) MapFragment.this);
+					}
+	
+					@Override
+					public void onDisconnected() {
+	
+					}
+				}, new OnConnectionFailedListener() {
+	
+					@Override
+					public void onConnectionFailed(ConnectionResult arg0) {
+	
+						Log.d(TAG,
+								"Could not connect to Google Play Services (location provider)");
+	
+					}
+				});
+			}
+			
+			if (!locationclient.isConnected())
+				locationclient.connect();
 
 		}
 
 		@Override
 		public void onLocationChanged(Location loc) {
 
-			if (mMapView == null)
-				setupMap(loc.getLatitude() + "", loc.getLongitude() + "",
-						DEFAULT_MAP_ZOOM, mRootView);
-
+			setLocation(loc.getLatitude()+"",loc.getLongitude()+"");
 			lastLocation = loc;
 		}
 
@@ -518,7 +501,7 @@ public class MainActivity extends Activity {
 				this.radius = radius;
 				this.label = label;
 				
-				paint.setAlpha(80);
+				paint.setAlpha(60);
 				
 			}
 
@@ -527,16 +510,26 @@ public class MainActivity extends Activity {
 				Point mapCenterPoint = new Point();
 				 map.getProjection().toPixels(gp, mapCenterPoint);
 				
+				 GeoPoint gp2 = gp.destinationPoint(radius*30, 60);
+				 Point mapCirclePoint = new Point();
+				 map.getProjection().toPixels(gp2, mapCirclePoint);
+				 
+				int newRadius = mapCirclePoint.x - mapCenterPoint.x;
+				
+				// double metersPerPixel = TileSystem.GroundResolution(map.getMapCenter().getLatitude(), map.getZoomLevel());
+				 
+				 //int newRadius = (int)(metersPerPixel/radius);				 
+				 
 				 paint.setStyle(Paint.Style.STROKE);
 				 paint.setColor(Color.RED);
 				 paint.setStrokeWidth(5);
-				 canvas.drawCircle(mapCenterPoint.x, mapCenterPoint.y, radius, paint);
+				 canvas.drawCircle(mapCenterPoint.x, mapCenterPoint.y, newRadius, paint);
 				 
 				 paint.setStyle(Paint.Style.FILL_AND_STROKE);
 				 paint.setColor(Color.DKGRAY);
 				 paint.setStrokeWidth(2);
 				 paint.setTextSize(40);
-				 canvas.drawText(label, mapCenterPoint.x, mapCenterPoint.y+radius, paint);
+				 canvas.drawText(label, mapCenterPoint.x, mapCenterPoint.y+newRadius, paint);
 				 
 			}
 			
@@ -553,7 +546,7 @@ public class MainActivity extends Activity {
 	      if (bundle != null) {
 	    	
 	    	  int cellId = bundle.getInt("cid");
-	    	  int dbm = bundle.getInt("dbm")*20;
+	    	  int dbm = bundle.getInt("dbm");
 	       
 	    	  mMapFragment.addCircleOverlay(cellId+"", mMapFragment.getLastLocation().getLatitude(), mMapFragment.getLastLocation().getLongitude(), dbm);
 	      }

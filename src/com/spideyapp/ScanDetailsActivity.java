@@ -5,6 +5,8 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.fima.cardsui.views.CardUI;
 import com.spideyapp.sqlite.helper.DatabaseHelper;
@@ -14,10 +16,10 @@ import com.spideyapp.views.ScanDetailCard;
 
 public class ScanDetailsActivity extends Activity{
 	
-	private static final String TAG = "ScanDetails";
-	
 	private DatabaseHelper mDb;
 	private CardUI mCardView;
+	
+	private Scan mScan;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,13 +34,13 @@ public class ScanDetailsActivity extends Activity{
         Intent i = getIntent();
         long scan_id = i.getLongExtra("scan_id", -1);
         
-        Scan scan = mDb.getScan(scan_id);
+        mScan = mDb.getScan(scan_id);
         
-        if (scan != null)
+        if (mScan != null)
         {
-	        setTitle(scan.getId() + ": " + scan.getLocation() + " " + scan.getCreatedAt());
+	        setTitle(mScan.getLocation() + " " + mScan.getCreatedAt());
 	        
-	        List<CellInfo> cells = mDb.getAllCellsByScanId(scan.getId());
+	        List<CellInfo> cells = mDb.getAllCellsByScanId(mScan.getId());
 	        
 	        for (CellInfo cInfo : cells)
 	        {
@@ -62,6 +64,31 @@ public class ScanDetailsActivity extends Activity{
         }
          
     }
+    
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.menu_scan_details, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		int id = item.getItemId();
+		
+		if (id == R.id.action_map) {
+
+	    	Intent i = new Intent(getApplicationContext(), MainActivity.class);	    	
+	    	i.putExtra("scan_id", mScan.getId());	    	
+	    	startActivity(i);
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
     
 
 }

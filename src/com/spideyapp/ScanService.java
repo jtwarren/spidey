@@ -50,7 +50,8 @@ public class ScanService extends Service {
 			startSimpleScan();
 			*/
 		
-		startLegacyScan();
+		startDummyScan();
+		//startLegacyScan();
 
 		return Service.START_NOT_STICKY;
 	}
@@ -123,7 +124,7 @@ public class ScanService extends Service {
 		{
 			com.spideyapp.sqlite.model.CellInfo cell = new com.spideyapp.sqlite.model.CellInfo(
 					i, 100,
-					200, 300, 10*i);
+					200, 300, 2*i);
 
 			db.createCell(cell, scan_id);
 
@@ -155,7 +156,7 @@ public class ScanService extends Service {
 		int mnc = 0;
 		int level = 0;
 		
-	    if (networkOperator != null) {
+	    if (networkOperator != null && networkOperator.length() > 0) {
 	    	if (networkOperator.length() > 3)
 	    	{
 	    		mcc = Integer.parseInt(networkOperator.substring(0, 3));

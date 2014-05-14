@@ -13,11 +13,14 @@
     <string name="action_scan">New Scan</string>
     <string name="action_about">About</string>
     <string name="action_scans">History</string>
+    <string name="action_map">Map It!</string>
     <string name="activate_your_spidey_sense">Activate Your Spidey Sense</string>
     <string name="spidey_is_an_app_">SPIDEY is an app that helps you identify whether someone is attempting to monitor your cell phone location or activity. The app allows you to scan and detect changes in the cell tower infrastructure around you.\n\n\nSELECT \'NEW SCAN\' TO BEGIN!</string>
     <string name="scan_name">Scan Name</string>
     <string name="please_enter_a_name_for_this_scan_your_location_place_etc_">Please enter a name for this scan (your location, place, etc)</string>
     <string name="history_of_spidey_scans">History of Spidey Scans</string>
+    <string name="required_mobile_settings">Required Mobile Settings</string>
+    <string name="please_uncheck_data_enabled_and_set_preferred_network_type_to_2g_on_the_mobile_network_settings_screen_click_ok_to_open_it_now_">Please uncheck \'Data enabled\' and set \'Preferred network type\' to 2G on the \'Mobile Network\' settings screen (click OK to open it now)</string>
     
     
 </resources>
