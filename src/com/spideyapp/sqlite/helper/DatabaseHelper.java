@@ -67,7 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ COLUMN_CID + " INTEGER, " + COLUMN_LAC + " INTEGER, "
 			+ COLUMN_MCC + " INTEGER, " + COLUMN_MNC + " INTEGER, "
 			+ COLUMN_CREATED_AT + " DATETIME,"
-			+ COLUMN_DBM + " INTEGER, "
+			+ COLUMN_DBM + " INTEGER "
 			+ ")";
 
 	// scan_cell table create statement
@@ -143,17 +143,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 		Cursor c = db.rawQuery(selectQuery, null);
 
-		if (c != null)
+		if (c != null && c.isBeforeFirst())
+		{
 			c.moveToFirst();
 
-		Scan scan = new Scan();
-		scan.setId(c.getInt(c.getColumnIndex(COLUMN_ID)));
-		scan.setLocation(c.getString(c.getColumnIndex(COLUMN_LOCATION)));
-		scan.setLatitude(c.getDouble(c.getColumnIndex(COLUMN_LATITUDE)));
-		scan.setLongitude(c.getDouble(c.getColumnIndex(COLUMN_LONGITUDE)));
-		scan.setCreatedAt(c.getString(c.getColumnIndex(COLUMN_CREATED_AT)));
+			Scan scan = new Scan();
+			scan.setId(c.getInt(c.getColumnIndex(COLUMN_ID)));
+			scan.setLocation(c.getString(c.getColumnIndex(COLUMN_LOCATION)));
+			scan.setLatitude(c.getDouble(c.getColumnIndex(COLUMN_LATITUDE)));
+			scan.setLongitude(c.getDouble(c.getColumnIndex(COLUMN_LONGITUDE)));
+			scan.setCreatedAt(c.getString(c.getColumnIndex(COLUMN_CREATED_AT)));
 
-		return scan;
+			 List<CellInfo> cells = getAllCellsByScanId(scan.getId());
+			 scan.setCellInfos(cells);
+			
+			return scan;
+		}
+		else
+			return null;
 	}
 
 	/**
@@ -180,6 +187,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 				scan.setCreatedAt(c.getString(c
 						.getColumnIndex(COLUMN_CREATED_AT)));
 
+				 List<CellInfo> cells = getAllCellsByScanId(scan.getId());
+				 scan.setCellInfos(cells);
+				 
 				scans.add(scan);
 			} while (c.moveToNext());
 		}

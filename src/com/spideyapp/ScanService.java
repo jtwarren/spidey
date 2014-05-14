@@ -41,20 +41,22 @@ public class ScanService extends Service {
 		lastScanLat = intent.getDoubleExtra("lat", 0.0);
 		lastScanLon = intent.getDoubleExtra("lon", 0.0);
 		
-		if (DEBUG == true)
-			startDummyScan();
-		
+		db = DatabaseHelper.getInstance(getApplicationContext());
+
+		/**
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
 			startScan();
 		else
 			startSimpleScan();
+			*/
+		
+		startLegacyScan();
 
 		return Service.START_NOT_STICKY;
 	}
 
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	private void startScan() {
-		db = DatabaseHelper.getInstance(getApplicationContext());
 		
 		logMessage("starting tower scan... ");
 		Scan scan = new Scan();
@@ -93,10 +95,6 @@ public class ScanService extends Service {
 
 					shareCellInfo (cell);
 					
-					logMessage("registered: " + cellInfoGsm.isRegistered()
-							+ ",cellId: " + cellIdentity.toString()
-							+ ",cellSignalStrength: "
-							+ cellSignalStrengthGsm.toString());
 				}
 			}
 		}
@@ -106,6 +104,8 @@ public class ScanService extends Service {
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
 	private void startDummyScan() {
 		db = DatabaseHelper.getInstance(getApplicationContext());
+		
+		
 		
 		logMessage("starting tower scan... ");
 		Scan scan = new Scan();
@@ -136,17 +136,50 @@ public class ScanService extends Service {
 	}
 
 
-	private void startSimpleScan() {
+	private void startLegacyScan() {
 		logMessage("starting tower scan (old stylie)... ");
 
-		String mccMnc = telephonyManager.getNetworkOperator();
+		Scan scan = new Scan();
 
+		// TODO: Get location from user?
+		scan.setLocation(lastScanName);
+
+		// TODO: use actual GPS Coordinates
+		scan.setLatitude(lastScanLat);
+		scan.setLongitude(lastScanLon);
+
+		long scan_id = db.createScan(scan);
+		
+		String networkOperator = telephonyManager.getNetworkOperator();
+		int mcc = 0;
+		int mnc = 0;
+		int level = 0;
+		
+	    if (networkOperator != null) {
+	    	if (networkOperator.length() > 3)
+	    	{
+	    		mcc = Integer.parseInt(networkOperator.substring(0, 3));
+	    		mnc = Integer.parseInt(networkOperator.substring(3));
+	    	}
+	    	else
+	    		mcc = Integer.parseInt(networkOperator);
+	    }			    			   
+	
 		if (telephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM) {
 			final GsmCellLocation location = (GsmCellLocation) telephonyManager
 					.getCellLocation();
 			if (location != null) {
-				logMessage("mccMnc: " + mccMnc + ",LAC: " + location.getLac()
-						+ " CID: " + location.getCid());
+				
+				
+				com.spideyapp.sqlite.model.CellInfo cell = new com.spideyapp.sqlite.model.CellInfo(
+						location.getCid(), location.getLac(),
+						mcc, mnc, level);
+
+				db.createCell(cell, scan_id);
+
+				shareCellInfo (cell);
+				
+				
 			}
 		}
 
@@ -155,10 +188,14 @@ public class ScanService extends Service {
 		if (cellInfos != null) {
 			for (NeighboringCellInfo cellInfo : cellInfos) {
 
-				logMessage("cell-id:" + cellInfo.getCid() + ",lac: "
-						+ cellInfo.getLac() + ",Received Signal Strength: "
-						+ cellInfo.getRssi() + ",LAC: " + cellInfo.getLac());
+				
+				com.spideyapp.sqlite.model.CellInfo cell = new com.spideyapp.sqlite.model.CellInfo(
+						cellInfo.getCid(), cellInfo.getLac(),
+						mcc, mnc, cellInfo.getRssi());
+				
+				db.createCell(cell, scan_id);
 
+				shareCellInfo (cell);
 			}
 		}
 	}

@@ -46,10 +46,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="8dip"
-                android:layout_marginRight="48dip"
-                android:ellipsize="end"
-                android:fontFamily="sans-serif-light"
-                android:maxLines="3"
+                android:layout_marginRight="48dip"                
+                android:fontFamily="sans-serif-light"                
                 android:text=""
                 android:textSize="16sp" />
         </LinearLayout>

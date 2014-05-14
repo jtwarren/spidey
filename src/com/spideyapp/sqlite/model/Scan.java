@@ -50,7 +50,11 @@ public class Scan {
 		this.mCellInfos.add(cellInfo);
 	}
 
-	// Getters
+	public void setCellInfos (List<CellInfo> mCellInfos)
+	{
+		this.mCellInfos = mCellInfos;
+	}
+ 
 
 	public long getId() {
 		return this.mId;
@@ -74,5 +78,25 @@ public class Scan {
 	
 	public List<CellInfo> getCellInfos() {
 		return this.mCellInfos;
+	}
+	
+	public String toString ()
+	{
+		StringBuffer result = new StringBuffer();
+		
+		result.append("Location: ").append(getLocation()).append("\n");
+		result.append("Created: ").append(getCreatedAt()).append("\n");
+		result.append("Latitude: ").append(getLatitude()).append("\n");
+		result.append("Longitude: ").append(getLongitude()).append("\n");
+		result.append("\n\n");
+		
+		for (CellInfo ci : mCellInfos)
+		{
+			result.append(ci.toString()).append("\n");
+		}
+		
+		
+		return result.toString();
+		
 	}
 }
