@@ -129,7 +129,7 @@ public class MainActivity extends Activity {
 
         ShowcaseView.ConfigOptions co = new ShowcaseView.ConfigOptions();        	
 		co.shotType = ShowcaseView.TYPE_NO_LIMIT;
-		co.hideOnClickOutside = true;
+//		co.hideOnClickOutside = true;
 		
         ViewTarget target = new ViewTarget(R.id.container, this);
         final ShowcaseView sv = ShowcaseView.insertShowcaseView(target, this, getString(R.string.activate_your_spidey_sense),getString(R.string.spidey_is_an_app_), co);
@@ -217,7 +217,7 @@ public class MainActivity extends Activity {
 	}
 	
 	private void showScans() {
-		Intent intent = new Intent(this, ScansActivity.class);
+		Intent intent = new Intent(this, HistoryActivity.class);
 		startActivity(intent);
 	}
 

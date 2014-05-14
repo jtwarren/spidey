@@ -67,7 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 			+ COLUMN_CID + " INTEGER, " + COLUMN_LAC + " INTEGER, "
 			+ COLUMN_MCC + " INTEGER, " + COLUMN_MNC + " INTEGER, "
 			+ COLUMN_CREATED_AT + " DATETIME,"
-			+ COLUMN_DBM + " INTEGER, "
+			+ COLUMN_DBM + " INTEGER "
 			+ ")";
 
 	// scan_cell table create statement
