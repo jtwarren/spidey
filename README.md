@@ -1,3 +1,5 @@
+Note: this project has been deprecated. 
+
 Spidey
 ======
 
